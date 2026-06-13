@@ -13,7 +13,7 @@ const rateLimit = new Map<string, { count: number, timestamp: number }>();
 
 export default clerkMiddleware(async (auth, req) => {
   // Rate limiting logic
-  const ip = req.ip || req.headers.get("x-forwarded-for") || "anonymous";
+  const ip = req.headers.get("x-forwarded-for") || "anonymous";
   const now = Date.now();
   const windowMs = 60 * 1000; // 1 minute
   const maxRequests = 60; // 60 requests per minute

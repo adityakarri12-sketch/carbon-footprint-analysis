@@ -8,7 +8,7 @@ export function handleApiError(error: unknown, context: string) {
     return NextResponse.json({ 
       success: false,
       message: 'Validation failed', 
-      errors: error.errors 
+      errors: error.issues 
     }, { status: 400 });
   }
 

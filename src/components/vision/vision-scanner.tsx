@@ -190,7 +190,7 @@ export function VisionScanner() {
           ) : (
             <div className="flex flex-col items-center justify-center text-center space-y-4 h-full text-muted-foreground/60">
               <ImageIcon className="w-16 h-16 opacity-50" />
-              <p className="max-w-xs">Upload an image on the left to see Gemini's analysis appear here.</p>
+              <p className="max-w-xs">Upload an image on the left to see Gemini&apos;s analysis appear here.</p>
             </div>
           )}
         </section>

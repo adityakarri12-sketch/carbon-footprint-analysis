@@ -1,6 +1,6 @@
 "use client";
 
-import { Trophy, Medal, Flame, Users, TrendingUp, MapPin, Sparkles, RefreshCw } from "lucide-react";
+import { Trophy, Medal, Flame, Sparkles, RefreshCw } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -9,9 +9,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { useState, useEffect } from "react";
-import { APIProvider, Map, AdvancedMarker, Pin } from "@vis.gl/react-google-maps";
+import { APIProvider, Map, AdvancedMarker } from "@vis.gl/react-google-maps";
 
 interface LeaderboardUser {
   rank: number;
@@ -50,12 +50,12 @@ export function CommunityDashboard({ apiKey }: { apiKey: string }) {
     }, 1500);
   }, []);
 
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     show: { opacity: 1, transition: { staggerChildren: 0.15 } }
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 30 },
     show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 200, damping: 20 } }
   };

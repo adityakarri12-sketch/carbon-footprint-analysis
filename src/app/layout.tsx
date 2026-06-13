@@ -18,8 +18,8 @@ const robotoMono = Roboto_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Carbon Wise',
-  description: 'Track and manage your carbon footprint',
+  title: 'CarbonWise – Intelligent Carbon Footprint Awareness Platform',
+  description: 'Track, understand, and reduce your environmental footprint with AI-driven insights and interactive goal setting.',
 }
 
 export default function RootLayout({

@@ -1,5 +1,4 @@
 import { Button } from '@/components/ui/button';
-const UserButton = () => <button onClick={() => console.log('Sign out')}>Sign Out</button>;
 import { auth } from '@clerk/nextjs/server';
 import Link from 'next/link';
 

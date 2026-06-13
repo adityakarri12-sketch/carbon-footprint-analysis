@@ -8,10 +8,10 @@ global.ReadableStream = ReadableStream;
 global.MessageChannel = MessageChannel;
 global.MessagePort = MessagePort;
 
-if (typeof global.Request === 'undefined') {
-  const { Request, Response, Headers, fetch } = require('undici');
-  global.Request = Request;
-  global.Response = Response;
-  global.Headers = Headers;
-  global.fetch = fetch;
-}
+// if (typeof global.Request === 'undefined') {
+//   const { Request, Response, Headers, fetch } = require('undici');
+//   global.Request = Request;
+//   global.Response = Response;
+//   global.Headers = Headers;
+//   global.fetch = fetch;
+// }

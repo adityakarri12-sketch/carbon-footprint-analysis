@@ -1,3 +1,6 @@
+/**
+ * @jest-environment node
+ */
 import { POST } from '../src/app/api/gemini/plan/route';
 import { NextRequest } from 'next/server';
 

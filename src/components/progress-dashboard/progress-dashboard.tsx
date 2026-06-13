@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Maximize2, Minimize2, X, Trash2 } from "lucide-react";
+import { RefreshCw, Maximize2, Minimize2, Trash2 } from "lucide-react";
 
 interface FootprintRecord {
   id: string;
@@ -38,6 +37,7 @@ export function ProgressDashboard() {
 
   useEffect(() => {
     fetchHistory();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleClearHistory = async () => {
@@ -58,7 +58,7 @@ export function ProgressDashboard() {
 
   const displayHistory = isFullscreen ? history : history.slice(0, 5);
 
-  const Content = () => (
+  const content = (
     <div className="flex flex-col h-full">
       <div className="flex justify-end items-center gap-2 mb-4">
         <Button 
@@ -148,7 +148,7 @@ export function ProgressDashboard() {
               <h2 className="text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-emerald-500 to-green-500">Complete Progress History</h2>
             </div>
           )}
-          <Content />
+          {content}
         </div>
       </div>
     </>

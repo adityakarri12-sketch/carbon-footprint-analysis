@@ -45,6 +45,12 @@ describe('Backend Services Integration', () => {
       const history = await service.getHistory(userId);
       expect(Array.isArray(history)).toBe(true);
     });
+
+    it('clears history', async () => {
+      const service = new CarbonFootprintService();
+      const result = await service.clearHistory(userId);
+      expect(result.count).toBe(1);
+    });
   });
 
   describe('GoalService', () => {
@@ -54,19 +60,58 @@ describe('Backend Services Integration', () => {
       expect(goal.id).toBe('goal_1');
     });
 
+    it('gets goals', async () => {
+      const service = new GoalService();
+      const goals = await service.getGoals(userId);
+      expect(Array.isArray(goals)).toBe(true);
+    });
+
     it('updates a goal', async () => {
       const service = new GoalService();
       const updated = await service.updateGoal('goal_1', userId, { isCompleted: true });
       expect(updated.isCompleted).toBe(true);
     });
+
+    it('fails to update unauthorized goal', async () => {
+      const mPrisma = require('@prisma/client').PrismaClient();
+      mPrisma.goal.findFirst.mockResolvedValueOnce(null);
+      const service = new GoalService();
+      await expect(service.updateGoal('goal_2', userId, { isCompleted: true })).rejects.toThrow('Goal not found or user not authorized');
+    });
+
+    it('deletes a goal', async () => {
+      const service = new GoalService();
+      const deleted = await service.deleteGoal('goal_1', userId);
+      expect(deleted.id).toBe('goal_1');
+    });
+
+    it('fails to delete unauthorized goal', async () => {
+      const mPrisma = require('@prisma/client').PrismaClient();
+      mPrisma.goal.findFirst.mockResolvedValueOnce(null);
+      const service = new GoalService();
+      await expect(service.deleteGoal('goal_2', userId)).rejects.toThrow('Goal not found or user not authorized');
+    });
   });
 
   describe('RecommendationService', () => {
     it('fetches generic recommendations for new users', async () => {
+      const mPrisma = require('@prisma/client').PrismaClient();
+      mPrisma.footprintRecord.findFirst.mockResolvedValueOnce(null);
       const service = new RecommendationService();
       const recs = await service.getRecommendations(userId);
       expect(recs.length).toBeGreaterThan(0);
       expect(recs[0]).toHaveProperty('category');
+    });
+
+    it('fetches personalized recommendations', async () => {
+      const mPrisma = require('@prisma/client').PrismaClient();
+      mPrisma.footprintRecord.findFirst.mockResolvedValueOnce({
+        transportation: 100, electricity: 50, food: 30, waste: 10
+      });
+      const service = new RecommendationService();
+      const recs = await service.getRecommendations(userId);
+      expect(recs.length).toBeGreaterThan(0);
+      expect(recs[0].category).toBe('transportation');
     });
   });
 });

@@ -35,6 +35,9 @@ export function GoalForm({ onGoalAdded }: GoalFormProps) {
   const { toast } = useToast();
   const form = useForm<GoalFormValues>({
     resolver: zodResolver(goalFormSchema),
+    defaultValues: {
+      description: "",
+    },
   });
 
   async function onSubmit(data: GoalFormValues) {

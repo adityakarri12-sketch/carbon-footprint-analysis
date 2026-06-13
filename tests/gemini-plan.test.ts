@@ -1,9 +1,12 @@
+/**
+ * @jest-environment node
+ */
 import { POST } from '../src/app/api/gemini/plan/route';
 import { NextRequest } from 'next/server';
 
 // Mock the clerk auth and carbon footprint service
 jest.mock('@clerk/nextjs/server', () => ({
-  auth: () => ({ userId: 'test_user_123' }),
+  auth: jest.fn(),
 }));
 
 jest.mock('@/application/carbon-footprint/carbon-footprint.service', () => {
@@ -16,25 +19,64 @@ jest.mock('@/application/carbon-footprint/carbon-footprint.service', () => {
   };
 });
 
-describe('Gemini Plan API', () => {
-  it('should return a structured JSON plan with title, impact, and description', async () => {
-    // If GEMINI_API_KEY is not set in CI, it will hit the graceful fallback.
-    // We test that the response matches the expected schema in either case.
-    const req = new NextRequest('http://localhost:3000/api/gemini/plan', {
-      method: 'POST',
-    });
+jest.mock('@google/generative-ai', () => {
+  return {
+    GoogleGenerativeAI: jest.fn().mockImplementation(() => ({
+      getGenerativeModel: jest.fn().mockReturnValue({
+        generateContent: jest.fn().mockResolvedValue({
+          response: {
+            text: () => JSON.stringify([
+              { title: "Mock AI Goal", impact: "High", description: "This is a mocked goal." }
+            ])
+          }
+        })
+      })
+    }))
+  };
+});
 
+import { auth } from '@clerk/nextjs/server';
+
+describe('Gemini Plan API', () => {
+  const originalEnv = process.env;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    process.env = { ...originalEnv };
+  });
+
+  afterAll(() => {
+    process.env = originalEnv;
+  });
+
+  it('should return 401 if unauthorized', async () => {
+    (auth as jest.Mock).mockResolvedValueOnce({ userId: null });
+    const req = new NextRequest('http://localhost:3000/api/gemini/plan', { method: 'POST' });
+    const response = await POST(req);
+    expect(response.status).toBe(401);
+  });
+
+  it('should hit the fallback if GEMINI_API_KEY is not set', async () => {
+    (auth as jest.Mock).mockResolvedValueOnce({ userId: 'test_user_123' });
+    delete process.env.GEMINI_API_KEY;
+
+    const req = new NextRequest('http://localhost:3000/api/gemini/plan', { method: 'POST' });
     const response = await POST(req);
     expect(response.status).toBe(200);
 
     const data = await response.json();
-    expect(data.plan).toBeDefined();
-    expect(Array.isArray(data.plan)).toBe(true);
-    expect(data.plan.length).toBeGreaterThan(0);
+    expect(data.plan[0].title).toBe("Reduce Driving");
+  });
 
-    const firstStep = data.plan[0];
-    expect(firstStep).toHaveProperty('title');
-    expect(firstStep).toHaveProperty('impact');
-    expect(firstStep).toHaveProperty('description');
+  it('should use Gemini API if GEMINI_API_KEY is set', async () => {
+    (auth as jest.Mock).mockResolvedValueOnce({ userId: 'test_user_123' });
+    process.env.GEMINI_API_KEY = "test_api_key";
+
+    const req = new NextRequest('http://localhost:3000/api/gemini/plan', { method: 'POST' });
+    const response = await POST(req);
+    expect(response.status).toBe(200);
+
+    const data = await response.json();
+    expect(data.plan[0].title).toBe("Mock AI Goal");
   });
 });

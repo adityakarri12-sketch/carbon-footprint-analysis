@@ -109,7 +109,7 @@ export function FootprintHistory() {
             <Tooltip 
               contentStyle={CustomTooltipStyle}
               itemStyle={{ color: '#fff', fontWeight: 'bold' }}
-              formatter={(value: number) => [`${value} kg CO₂e`, 'Emissions']}
+              formatter={(value: any) => [`${value} kg CO₂e`, 'Emissions']}
             />
             <Legend verticalAlign="bottom" height={36} iconType="circle" />
           </PieChart>
@@ -124,7 +124,7 @@ export function FootprintHistory() {
             <CartesianGrid strokeDasharray="3 3" opacity={0.2} vertical={false} />
             <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }} dy={10} />
             <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }} />
-            <Tooltip cursor={{ fill: 'rgba(34,197,94,0.1)' }} contentStyle={CustomTooltipStyle} formatter={(value: number) => [`${value} kg CO₂e`, 'Monthly Footprint']} />
+            <Tooltip cursor={{ fill: 'rgba(34,197,94,0.1)' }} contentStyle={CustomTooltipStyle} formatter={(value: any) => [`${value} kg CO₂e`, 'Monthly Footprint']} />
             <Bar dataKey="value" fill="#3b82f6" radius={[4, 4, 0, 0]} />
           </BarChart>
         ) : chartType === 'AreaChart' ? (
@@ -138,7 +138,7 @@ export function FootprintHistory() {
             <CartesianGrid strokeDasharray="3 3" opacity={0.2} vertical={false} />
             <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }} dy={10} />
             <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }} />
-            <Tooltip contentStyle={CustomTooltipStyle} formatter={(value: number) => [`${value} kg CO₂e`, 'Monthly Footprint']} />
+            <Tooltip contentStyle={CustomTooltipStyle} formatter={(value: any) => [`${value} kg CO₂e`, 'Monthly Footprint']} />
             <Area type="monotone" dataKey="value" stroke="#8b5cf6" strokeWidth={3} fillOpacity={1} fill="url(#colorValue)" />
           </AreaChart>
         ) : (
@@ -146,7 +146,7 @@ export function FootprintHistory() {
             <CartesianGrid strokeDasharray="3 3" opacity={0.2} vertical={false} />
             <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }} dy={10} />
             <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }} />
-            <Tooltip contentStyle={CustomTooltipStyle} formatter={(value: number) => [`${value} kg CO₂e`, 'Monthly Footprint']} />
+            <Tooltip contentStyle={CustomTooltipStyle} formatter={(value: any) => [`${value} kg CO₂e`, 'Monthly Footprint']} />
             <Line type="monotone" dataKey="value" stroke="#22c55e" strokeWidth={3} dot={{ r: 5, fill: '#22c55e', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 8, strokeWidth: 0 }} />
           </LineChart>
         )}
@@ -154,7 +154,7 @@ export function FootprintHistory() {
     );
   };
 
-  const Content = () => (
+  const content = (
     <div className="space-y-6 flex flex-col h-full">
       {/* Header Row: Title on Left, Actions on Right */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -229,7 +229,7 @@ export function FootprintHistory() {
               <h2 className="text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-indigo-500">Visualizations Studio</h2>
             </div>
           )}
-          <Content />
+          {content}
         </div>
       </div>
     </>
