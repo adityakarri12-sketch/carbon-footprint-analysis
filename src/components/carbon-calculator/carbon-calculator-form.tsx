@@ -350,7 +350,35 @@ export function CarbonCalculatorForm() {
                     {isGettingAdvice ? (
                       <span className="flex items-center gap-2"><RefreshCw className="w-3 h-3 animate-spin" /> Analyzing your footprint...</span>
                     ) : (
-                      geminiAdvice
+                      <div className="flex flex-col gap-3">
+                        <span>{geminiAdvice}</span>
+                        {geminiAdvice && (
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="w-fit mt-1 border-blue-500/30 text-blue-600 hover:bg-blue-500/10"
+                            onClick={async () => {
+                              try {
+                                const highestCategory = Object.keys(result!.categoryBreakdown).reduce((a, b) => result!.categoryBreakdown[a as keyof typeof result.categoryBreakdown] > result!.categoryBreakdown[b as keyof typeof result.categoryBreakdown] ? a : b);
+                                await fetch('/api/goals', {
+                                  method: 'POST',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify({
+                                    description: `Reduce ${highestCategory} emissions by 10% this month (AI Suggested)`,
+                                    targetDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+                                  })
+                                });
+                                alert("AI Goal automatically added to your dashboard!");
+                              } catch(e) {
+                                console.error(e);
+                              }
+                            }}
+                          >
+                            <Sparkles className="w-4 h-4 mr-2" />
+                            1-Click: Add Auto-Goal to Dashboard
+                          </Button>
+                        )}
+                      </div>
                     )}
                   </p>
                 </div>

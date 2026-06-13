@@ -7,6 +7,7 @@ import './globals.css'
 
 import { SkipToContent } from '@/components/skip-to-content'
 import { Navbar } from '@/components/navbar'
+import { VoiceCommander } from '@/components/voice-commander'
 
 const outfit = Outfit({ 
   subsets: ['latin'],
@@ -44,6 +45,7 @@ export default function RootLayout({
               <main id="main-content" className="flex-1 flex flex-col">
                 {children}
               </main>
+              <VoiceCommander />
             </div>
             <Toaster />
           </ThemeProvider>
