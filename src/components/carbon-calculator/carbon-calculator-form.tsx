@@ -258,11 +258,12 @@ export function CarbonCalculatorForm() {
                             <Utensils className="w-4 h-4" /> Food
                           </FormLabel>
                           <FormControl>
-                            <div className="relative">
-                              <Input type="number" className="pl-2 pr-8 focus-visible:ring-orange-500 transition-all" {...field} />
-                              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground text-xs font-medium">kg</span>
-                            </div>
-                          </FormControl>
+                              <div className="relative">
+                                <Input type="number" aria-describedby="food-desc" className="pl-2 pr-8 focus-visible:ring-orange-500 transition-all" {...field} />
+                                <span className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground text-xs font-medium">kg</span>
+                              </div>
+                            </FormControl>
+                            <FormDescription id="food-desc" className="sr-only">Monthly food waste in kg</FormDescription>
                           <FormMessage className="text-red-500 text-xs" />
                         </FormItem>
                       )}
@@ -277,11 +278,12 @@ export function CarbonCalculatorForm() {
                             <Trash2 className="w-4 h-4" /> Waste
                           </FormLabel>
                           <FormControl>
-                            <div className="relative">
-                              <Input type="number" className="pl-2 pr-8 focus-visible:ring-stone-500 transition-all" {...field} />
-                              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground text-xs font-medium">kg</span>
-                            </div>
-                          </FormControl>
+                              <div className="relative">
+                                <Input type="number" aria-describedby="waste-desc" className="pl-2 pr-8 focus-visible:ring-stone-500 transition-all" {...field} />
+                                <span className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground text-xs font-medium">kg</span>
+                              </div>
+                            </FormControl>
+                            <FormDescription id="waste-desc" className="sr-only">Monthly solid waste in kg</FormDescription>
                           <FormMessage className="text-red-500 text-xs" />
                         </FormItem>
                       )}
