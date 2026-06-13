@@ -9,10 +9,14 @@ import { LayoutDashboard, Calculator, Bot, User, Leaf, Menu, X, Camera } from "l
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
+import { useTheme } from "next-themes";
+import { Moon, Sun } from "lucide-react";
+
 export function Navbar() {
   const pathname = usePathname();
   const { isSignedIn } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   const navLinks = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -24,7 +28,7 @@ export function Navbar() {
   ];
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60 transition-all duration-300 shadow-sm">
+    <nav aria-label="Main Navigation" className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60 transition-all duration-300 shadow-sm">
       <div className="container mx-auto flex h-16 items-center px-4 justify-between relative">
         <div className="flex items-center gap-6 md:gap-10">
           
@@ -87,7 +91,19 @@ export function Navbar() {
           )}
         </div>
 
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2 sm:space-x-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="rounded-full"
+            aria-label="Toggle dark mode"
+            aria-pressed={theme === "dark"}
+          >
+            <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 text-amber-500" />
+            <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 text-blue-500" />
+          </Button>
+
           {isSignedIn ? (
             <>
               <div className="hidden md:block">

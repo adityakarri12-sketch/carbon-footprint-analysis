@@ -1,32 +1,34 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { auth } from '@clerk/nextjs/server';
 import { CarbonFootprintService } from '@/application/carbon-footprint/carbon-footprint.service';
+import { withErrorHandler } from '@/lib/api-handler';
+import { ApiError } from '@/lib/api-error';
+import { CONSTANTS } from '@/lib/constants';
+import { checkRateLimit } from '@/lib/rate-limit';
 
-export async function POST(_req: NextRequest) {
+export const POST = withErrorHandler(async ({ userId }) => {
+  if (!checkRateLimit(userId)) {
+    throw new ApiError('Too many requests. Please wait a minute.', 429);
+  }
+
+  const service = new CarbonFootprintService();
+  const history = await service.getHistory(userId);
+
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    // High performance fallback if API fails
+    return NextResponse.json({
+      plan: [
+        { title: "Reduce Driving", impact: "High", description: "Carpool 2 days a week." },
+        { title: "Energy Audit", impact: "Medium", description: "Switch to LED lighting." },
+        { title: "Meatless Mondays", impact: "Medium", description: "Eat plant-based 1 day a week." }
+      ]
+    });
+  }
+
   try {
-    const { userId } = await auth();
-    if (!userId) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
-
-    const service = new CarbonFootprintService();
-    const history = await service.getHistory(userId);
-
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      // High performance fallback if API fails
-      return NextResponse.json({
-        plan: [
-          { title: "Reduce Driving", impact: "High", description: "Carpool 2 days a week." },
-          { title: "Energy Audit", impact: "Medium", description: "Switch to LED lighting." },
-          { title: "Meatless Mondays", impact: "Medium", description: "Eat plant-based 1 day a week." }
-        ]
-      });
-    }
-
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const model = genAI.getGenerativeModel({ model: CONSTANTS.MODELS.GEMINI_FAST });
 
     // Performance & Quality: Ensure JSON response format for structured parsing.
     const prompt = `You are a strict JSON API. A user needs a 3-step action plan to reduce their carbon footprint.
@@ -38,12 +40,11 @@ export async function POST(_req: NextRequest) {
     const result = await model.generateContent(prompt);
     let text = result.response.text().trim();
     
-    if (text.startsWith("```json")) {
-        text = text.replace(/```json/g, "").replace(/```/g, "").trim();
+    if (text.startsWith("\`\`\`json")) {
+        text = text.replace(/\`\`\`json/g, "").replace(/\`\`\`/g, "").trim();
     }
 
     const plan = JSON.parse(text);
-
     return NextResponse.json({ plan });
   } catch (error) {
     console.error("Gemini Plan API Error:", error);
@@ -56,4 +57,4 @@ export async function POST(_req: NextRequest) {
         ]
     });
   }
-}
+});

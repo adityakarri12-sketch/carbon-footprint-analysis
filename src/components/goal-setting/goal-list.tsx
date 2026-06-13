@@ -79,6 +79,7 @@ export function GoalList({ goals, onGoalChange }: GoalListProps) {
               <Checkbox
                 checked={goal.isCompleted}
                 onCheckedChange={() => handleToggleComplete(goal)}
+                aria-label={`Mark goal "${goal.description}" as ${goal.isCompleted ? 'incomplete' : 'complete'}`}
               />
               <div>
                 <p className={`font-medium ${goal.isCompleted ? 'line-through text-muted-foreground' : ''}`}>
@@ -89,7 +90,7 @@ export function GoalList({ goals, onGoalChange }: GoalListProps) {
                 </p>
               </div>
             </div>
-            <Button variant="ghost" size="icon" onClick={() => handleDelete(goal.id)}>
+            <Button variant="ghost" size="icon" onClick={() => handleDelete(goal.id)} aria-label={`Delete goal: ${goal.description}`}>
               <Trash2 className="h-4 w-4" />
             </Button>
           </CardContent>

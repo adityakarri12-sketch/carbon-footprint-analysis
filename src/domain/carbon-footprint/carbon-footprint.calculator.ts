@@ -1,19 +1,12 @@
 import { CarbonFootprint, CarbonFootprintResult } from './carbon-footprint.interface';
-
-// Emission factors (example values, replace with accurate data)
-const EMISSION_FACTORS = {
-  TRANSPORTATION: 0.21, // kg CO2e per km
-  ELECTRICITY: 0.82,    // kg CO2e per kWh
-  FOOD: 2.5,            // kg CO2e per kg
-  WASTE: 0.5,           // kg CO2e per kg
-};
+import { CONSTANTS } from '@/lib/constants';
 
 export class CarbonFootprintCalculator {
   static calculate(data: CarbonFootprint): CarbonFootprintResult {
-    const transportation = data.transportation * EMISSION_FACTORS.TRANSPORTATION;
-    const electricity = data.electricity * EMISSION_FACTORS.ELECTRICITY;
-    const food = data.food * EMISSION_FACTORS.FOOD;
-    const waste = data.waste * EMISSION_FACTORS.WASTE;
+    const transportation = data.transportation * CONSTANTS.FACTORS.TRANSPORT_MULTIPLIER;
+    const electricity = data.electricity * CONSTANTS.FACTORS.ELECTRICITY_MULTIPLIER;
+    const food = data.food * CONSTANTS.FACTORS.FOOD_MULTIPLIER;
+    const waste = data.waste * CONSTANTS.FACTORS.WASTE_MULTIPLIER;
 
     const monthly = transportation + electricity + food + waste;
     const annual = monthly * 12;

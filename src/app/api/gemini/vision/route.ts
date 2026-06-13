@@ -1,34 +1,36 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { auth } from '@clerk/nextjs/server';
+import { withErrorHandler } from '@/lib/api-handler';
+import { ApiError } from '@/lib/api-error';
+import { CONSTANTS } from '@/lib/constants';
+import { checkRateLimit } from '@/lib/rate-limit';
 
-export async function POST(req: NextRequest) {
+export const POST = withErrorHandler(async ({ req, userId }) => {
+  if (!checkRateLimit(userId)) {
+    throw new ApiError('Too many requests. Please wait a minute.', 429);
+  }
+
+  const { base64Image, mimeType } = await req.json();
+
+  if (!base64Image || !mimeType) {
+    throw ApiError.badRequest("Missing image data");
+  }
+
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    // Mock fallback for evaluation safety if key fails
+    return NextResponse.json({
+      itemName: "Generic Vehicle / Object",
+      estimatedFootprint: 15.5,
+      ecoAlternative: "Consider an electric alternative or repairing instead of replacing.",
+      details: "Mock analysis triggered due to missing API key."
+    });
+  }
+
   try {
-    const { userId } = await auth();
-    if (!userId) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
-
-    const { base64Image, mimeType } = await req.json();
-
-    if (!base64Image || !mimeType) {
-      return NextResponse.json({ error: "Missing image data" }, { status: 400 });
-    }
-
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      // Mock fallback for evaluation safety if key fails
-      return NextResponse.json({
-        itemName: "Generic Vehicle / Object",
-        estimatedFootprint: 15.5,
-        ecoAlternative: "Consider an electric alternative or repairing instead of replacing.",
-        details: "Mock analysis triggered due to missing API key."
-      });
-    }
-
     const genAI = new GoogleGenerativeAI(apiKey);
-    // Use gemini-2.5-flash as it is fast and supports multi-modal image inputs
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    // Use fast multi-modal model
+    const model = genAI.getGenerativeModel({ model: CONSTANTS.MODELS.GEMINI_FAST });
 
     const prompt = `You are an expert environmental AI. Analyze the image provided.
     Identify the main object (e.g., a car, a steak, an appliance, a plastic bottle).
@@ -55,8 +57,8 @@ export async function POST(req: NextRequest) {
     const result = await model.generateContent([prompt, ...imageParts]);
     let text = result.response.text().trim();
     
-    if (text.startsWith("```json")) {
-        text = text.replace(/```json/g, "").replace(/```/g, "").trim();
+    if (text.startsWith("\`\`\`json")) {
+        text = text.replace(/\`\`\`json/g, "").replace(/\`\`\`/g, "").trim();
     }
 
     const analysis = JSON.parse(text);
@@ -73,4 +75,4 @@ export async function POST(req: NextRequest) {
       details: "An error occurred during image processing."
     });
   }
-}
+});

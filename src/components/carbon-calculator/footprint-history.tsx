@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
-import { Leaf, BarChart2, PieChart as PieChartIcon, LineChart as LineChartIcon, Activity, Trash2, RefreshCw, Maximize2, Minimize2, X } from 'lucide-react';
+import { Leaf, BarChart2, PieChart as PieChartIcon, LineChart as LineChartIcon, Activity, Trash2, RefreshCw, Maximize2, Minimize2, X, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   LineChart, Line, BarChart, Bar, AreaChart, Area, PieChart, Pie, Cell,
@@ -62,6 +62,29 @@ export function FootprintHistory() {
     } finally {
       setIsDeleting(false);
     }
+  };
+
+  const exportToCSV = () => {
+    if (history.length === 0) return;
+    const headers = ['Date', 'Monthly (kg CO2)', 'Annual (kg CO2)', 'Transportation', 'Electricity', 'Food', 'Waste'];
+    const rows = history.map(r => [
+      format(new Date(r.createdAt), 'yyyy-MM-dd HH:mm'),
+      r.monthlyFootprint,
+      r.annualFootprint,
+      r.transportation,
+      r.electricity,
+      r.food,
+      r.waste
+    ].join(','));
+    
+    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "carbon_footprint_history.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const timeSeriesData = history.map(record => ({
@@ -162,15 +185,18 @@ export function FootprintHistory() {
           <h2 className="text-xl font-semibold text-muted-foreground group-hover:text-blue-500 transition-colors">Visualizations</h2>
         )}
         
-        <div className={`flex gap-2 ${isFullscreen ? 'ml-auto' : ''}`}>
-          <Button variant="outline" size="sm" onClick={fetchHistory} disabled={loading} className="gap-2 hover:bg-blue-500/10 hover:text-blue-500 hover:border-blue-500/30 transition-all">
+        <div className={`flex gap-2 flex-wrap ${isFullscreen ? 'ml-auto' : ''}`}>
+          <Button variant="outline" size="sm" onClick={exportToCSV} disabled={history.length === 0} aria-label="Export history to CSV" className="gap-2 hover:bg-green-500/10 hover:text-green-500 hover:border-green-500/30 transition-all">
+            <Download className="w-4 h-4" /> <span className="hidden sm:inline">Export CSV</span>
+          </Button>
+          <Button variant="outline" size="sm" onClick={fetchHistory} disabled={loading} aria-label="Refresh history" className="gap-2 hover:bg-blue-500/10 hover:text-blue-500 hover:border-blue-500/30 transition-all">
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} /> <span className="hidden sm:inline">Refresh</span>
           </Button>
-          <Button variant="outline" size="sm" onClick={() => setIsFullscreen(!isFullscreen)} className="gap-2 hover:bg-emerald-500/10 hover:text-emerald-500 hover:border-emerald-500/30 transition-all">
+          <Button variant="outline" size="sm" onClick={() => setIsFullscreen(!isFullscreen)} aria-label={isFullscreen ? "Minimize visualizations" : "Fullscreen visualizations"} className="gap-2 hover:bg-emerald-500/10 hover:text-emerald-500 hover:border-emerald-500/30 transition-all">
             {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
             <span className="hidden sm:inline">{isFullscreen ? "Minimize" : "Full Screen"}</span>
           </Button>
-          <Button variant="destructive" size="sm" onClick={handleClearHistory} disabled={isDeleting} className="gap-2 transition-all hover:scale-105 hover:shadow-[0_0_15px_rgba(239,68,68,0.5)]">
+          <Button variant="destructive" size="sm" onClick={handleClearHistory} disabled={isDeleting || history.length === 0} aria-label="Clear footprint history" className="gap-2 transition-all hover:scale-105 hover:shadow-[0_0_15px_rgba(239,68,68,0.5)]">
             <Trash2 className="w-4 h-4" /> <span className="hidden sm:inline">{isDeleting ? "Deleting..." : "Clear"}</span>
           </Button>
         </div>
@@ -206,9 +232,14 @@ export function FootprintHistory() {
                <p className="text-blue-500 animate-pulse font-mono uppercase tracking-widest text-sm">Loading Visualizations...</p>
             </div>
           ) : history.length === 0 ? (
-            <div className="text-center">
-              <p className="text-sm font-bold text-blue-500/70">AWAITING DATA</p>
-              <p className="text-xs text-muted-foreground mt-2">Calculate footprint to activate.</p>
+            <div className="text-center flex flex-col items-center gap-4">
+              <div className="w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center mb-2">
+                <BarChart2 className="w-8 h-8 text-blue-500/50" />
+              </div>
+              <div>
+                <p className="text-lg font-bold text-blue-500/90 tracking-wide">NO HISTORY FOUND</p>
+                <p className="text-sm text-muted-foreground mt-1 max-w-[250px]">Calculate your carbon footprint above to generate your historical visualizations.</p>
+              </div>
             </div>
           ) : renderChart()}
         </div>

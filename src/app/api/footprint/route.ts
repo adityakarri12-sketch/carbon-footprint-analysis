@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { CarbonFootprintService } from '@/application/carbon-footprint/carbon-footprint.service';
 import { z } from 'zod';
-import { auth } from '@clerk/nextjs/server';
+import { withErrorHandler } from '@/lib/api-handler';
 
 const footprintSchema = z.object({
   transportation: z.number().min(0),
@@ -10,59 +10,26 @@ const footprintSchema = z.object({
   waste: z.number().min(0),
 });
 
-export async function POST(req: NextRequest) {
-  try {
-    const { userId } = await auth();
-    if (!userId) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
+export const POST = withErrorHandler(async ({ req, userId }) => {
+  const body = await req.json();
+  const data = footprintSchema.parse(body);
 
-    const body = await req.json();
-    const data = footprintSchema.parse(body);
+  const service = new CarbonFootprintService();
+  const result = await service.calculateAndSave(userId, data);
 
-    const service = new CarbonFootprintService();
-    const result = await service.calculateAndSave(userId, data);
+  return NextResponse.json(result);
+});
 
-    return NextResponse.json(result);
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: error.issues }, { status: 400 });
-    }
-    console.error(error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
-  }
-}
+export const GET = withErrorHandler(async ({ userId }) => {
+  const service = new CarbonFootprintService();
+  const history = await service.getHistory(userId);
 
-export async function GET(_req: NextRequest) {
-  try {
-    const { userId } = await auth();
-    if (!userId) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
+  return NextResponse.json(history);
+});
 
-    const service = new CarbonFootprintService();
-    const history = await service.getHistory(userId);
+export const DELETE = withErrorHandler(async ({ userId }) => {
+  const service = new CarbonFootprintService();
+  await service.clearHistory(userId);
 
-    return NextResponse.json(history);
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
-  }
-}
-
-export async function DELETE(_req: NextRequest) {
-  try {
-    const { userId } = await auth();
-    if (!userId) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
-
-    const service = new CarbonFootprintService();
-    await service.clearHistory(userId);
-
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
-  }
-}
+  return NextResponse.json({ success: true });
+});
