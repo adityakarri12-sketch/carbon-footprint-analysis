@@ -57,9 +57,33 @@ export function ProgressDashboard() {
   };
 
   const displayHistory = isFullscreen ? history : history.slice(0, 5);
+  const latestFootprint = history.length > 0 ? history[0].monthlyFootprint : 0;
+  const BUDGET_LIMIT = 500;
+  const budgetPercentage = Math.min((latestFootprint / BUDGET_LIMIT) * 100, 100);
+  const isOverBudget = latestFootprint > BUDGET_LIMIT;
 
   const content = (
     <div className="flex flex-col h-full">
+      {/* Carbon Budget Tracker Widget */}
+      <div className="mb-6 p-4 rounded-xl border bg-card/50 shadow-sm">
+        <div className="flex justify-between items-end mb-2">
+          <div>
+            <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wide">Monthly Carbon Budget</h3>
+            <p className="text-2xl font-mono font-bold mt-1">
+              {latestFootprint.toFixed(1)} <span className="text-sm font-normal text-muted-foreground">/ {BUDGET_LIMIT} kg CO₂</span>
+            </p>
+          </div>
+          <div className={`text-sm font-bold px-3 py-1 rounded-full ${isOverBudget ? 'bg-red-500/10 text-red-500' : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'}`}>
+            {isOverBudget ? 'OVER BUDGET' : 'ON TRACK'}
+          </div>
+        </div>
+        <div className="h-4 w-full bg-muted rounded-full overflow-hidden">
+          <div 
+            className={`h-full transition-all duration-1000 ${isOverBudget ? 'bg-red-500' : 'bg-gradient-to-r from-emerald-400 to-green-500'}`}
+            style={{ width: `${budgetPercentage}%` }}
+          />
+        </div>
+      </div>
       <div className="flex justify-end items-center gap-2 mb-4">
         <Button 
           variant="outline" 

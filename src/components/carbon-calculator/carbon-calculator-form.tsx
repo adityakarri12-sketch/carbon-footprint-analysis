@@ -214,11 +214,11 @@ export function CarbonCalculatorForm() {
                             </FormLabel>
                             <FormControl>
                               <div className="relative">
-                                <Input type="number" className="pl-4 pr-12 focus-visible:ring-green-500 transition-all" {...field} />
+                                <Input type="number" aria-describedby="transport-desc" className="pl-4 pr-12 focus-visible:ring-green-500 transition-all" {...field} />
                                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm font-medium">km</span>
                               </div>
                             </FormControl>
-                            <FormDescription>Distance traveled by car per month.</FormDescription>
+                            <FormDescription id="transport-desc">Distance traveled by car per month.</FormDescription>
                             <FormMessage className="text-red-500" />
                           </FormItem>
                         )}
@@ -236,12 +236,12 @@ export function CarbonCalculatorForm() {
                             <Zap className="w-4 h-4" /> Electricity Usage
                           </FormLabel>
                           <FormControl>
-                            <div className="relative">
-                              <Input type="number" className="pl-4 pr-14 focus-visible:ring-yellow-500 transition-all" {...field} />
-                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm font-medium">kWh</span>
-                            </div>
-                          </FormControl>
-                          <FormDescription>Home electricity usage per month.</FormDescription>
+                              <div className="relative">
+                                <Input type="number" aria-describedby="electricity-desc" className="pl-4 pr-14 focus-visible:ring-yellow-500 transition-all" {...field} />
+                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm font-medium">kWh</span>
+                              </div>
+                            </FormControl>
+                            <FormDescription id="electricity-desc">Home electricity usage per month.</FormDescription>
                           <FormMessage className="text-red-500" />
                         </FormItem>
                       )}
