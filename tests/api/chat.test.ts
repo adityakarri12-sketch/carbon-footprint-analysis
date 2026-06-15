@@ -9,9 +9,7 @@ jest.mock('@clerk/nextjs/server', () => ({
   auth: jest.fn(),
 }));
 
-jest.mock('isomorphic-dompurify', () => ({
-  sanitize: (val: string) => val
-}));
+jest.mock('sanitize-html', () => (val: string) => val);
 
 describe('Chat API', () => {
   beforeEach(() => {

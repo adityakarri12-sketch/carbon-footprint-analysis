@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { GoogleGenAI } from '@google/genai';
 import { z } from 'zod';
-import DOMPurify from 'isomorphic-dompurify';
+import sanitizeHtml from 'sanitize-html';
 
 // Initialize the Google Gen AI client if the key is present
 const ai = process.env.GEMINI_API_KEY ? new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY }) : null;
@@ -22,7 +22,7 @@ export async function POST(req: Request) {
     const data = chatSchema.parse(body);
 
     // Sanitize input to prevent XSS / Prompt Injection payloads containing malicious HTML
-    const sanitizedMessage = DOMPurify.sanitize(data.message);
+    const sanitizedMessage = sanitizeHtml(data.message);
 
     // Check if the real API key is configured
     if (!ai) {

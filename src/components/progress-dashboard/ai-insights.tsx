@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import DOMPurify from "isomorphic-dompurify";
+import DOMPurify from "dompurify";
 import { Sparkles, Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
 

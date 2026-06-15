@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { GoalService } from '@/application/goal/goal.service';
-import DOMPurify from 'isomorphic-dompurify';
+import sanitizeHtml from 'sanitize-html';
 import { withErrorHandler } from '@/lib/api-handler';
 
 const goalSchema = z.object({
@@ -18,7 +18,7 @@ export const POST = withErrorHandler(async ({ req, userId }) => {
   
   // XSS Mitigation: Sanitize input
   if (body.description) {
-    body.description = DOMPurify.sanitize(body.description);
+    body.description = sanitizeHtml(body.description);
   }
   
   const data = goalSchema.parse(body);

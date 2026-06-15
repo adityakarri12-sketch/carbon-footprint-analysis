@@ -2,7 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { AiInsights } from '@/components/progress-dashboard/ai-insights';
 
-jest.mock('isomorphic-dompurify', () => ({
+jest.mock('dompurify', () => ({
   sanitize: (val: string) => val
 }));
 

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { GoalService } from '@/application/goal/goal.service';
-import DOMPurify from 'isomorphic-dompurify';
+import sanitizeHtml from 'sanitize-html';
 import { withErrorHandler } from '@/lib/api-handler';
 import { ApiError } from '@/lib/api-error';
 
@@ -19,7 +19,7 @@ export const PUT = withErrorHandler(async ({ req, userId, params }) => {
   const goalId = params.id;
   const body = await req.json();
   if (body.description) {
-    body.description = DOMPurify.sanitize(body.description);
+    body.description = sanitizeHtml(body.description);
   }
   const data = updateGoalSchema.parse(body);
   
