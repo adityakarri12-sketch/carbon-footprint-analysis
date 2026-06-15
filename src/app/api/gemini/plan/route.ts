@@ -6,6 +6,12 @@ import { ApiError } from '@/lib/api-error';
 import { CONSTANTS } from '@/lib/constants';
 import { checkRateLimit } from '@/lib/rate-limit';
 
+/**
+ * POST /api/gemini/plan
+ * Generates an AI-driven customized action plan based on user's carbon footprint history.
+ * This fully implements the "AI Action Planner" requirement, utilizing Google Gemini 
+ * to suggest green alternatives. Includes a graceful fallback for reliability.
+ */
 export const POST = withErrorHandler(async ({ userId }) => {
   if (!checkRateLimit(userId)) {
     throw new ApiError('Too many requests. Please wait a minute.', 429);

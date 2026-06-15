@@ -16,7 +16,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 import { CarbonFootprintResult } from '@/domain/carbon-footprint/carbon-footprint.interface';
-import { Car, Zap, Utensils, Trash2, Calculator, CheckCircle2, AlertCircle, RefreshCw, MapPin, Sparkles } from 'lucide-react';
+import { Car, Zap, Utensils, Trash2, Calculator, CheckCircle2, AlertCircle, RefreshCw, MapPin, Sparkles, Info } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const formSchema = z.object({
@@ -35,7 +35,6 @@ export function CarbonCalculatorForm() {
   const [isGettingAdvice, setIsGettingAdvice] = useState(false);
   const [originCity, setOriginCity] = useState("");
   const [destinationCity, setDestinationCity] = useState("");
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -134,23 +133,23 @@ export function CarbonCalculatorForm() {
     setDestinationCity("");
   }
 
-  const containerVariants: any = {
+  const containerVariants = {
     hidden: { opacity: 0 },
-    show: { opacity: 1, transition: { staggerChildren: 0.1 } }
+    show: { opacity: 1, transition: { staggerChildren: 0.1 } as const }
   };
   
-  const itemVariants: any = {
+  const itemVariants = {
     hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } as const }
   };
 
   return (
-    <div className="relative">
+    <div className="relative h-full flex flex-col">
       <AnimatePresence mode="wait">
         {!result ? (
-          <motion.div key="form" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}>
+          <motion.div key="form" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="flex-1 flex flex-col">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 flex-1 flex flex-col">
                 
                 {/* Advanced Google Maps Mock / Toggle */}
                 <div className="flex items-center justify-between p-3 bg-muted/40 rounded-lg border border-border">
@@ -178,8 +177,9 @@ export function CarbonCalculatorForm() {
                     <motion.div variants={itemVariants} className="grid grid-cols-2 gap-4 p-4 rounded-xl border border-blue-500/30 bg-blue-500/5 relative overflow-hidden">
                       <div className="absolute top-0 right-0 p-2 opacity-10"><MapPin className="w-16 h-16 text-blue-500" /></div>
                       <div className="col-span-2 sm:col-span-1 z-10">
-                        <FormLabel className="text-xs font-bold text-blue-600 dark:text-blue-400">Origin City</FormLabel>
+                        <FormLabel htmlFor="originCity" className="text-xs font-bold text-blue-600 dark:text-blue-400">Origin City</FormLabel>
                         <Input 
+                          id="originCity"
                           placeholder="e.g. New York, NY" 
                           className="mt-1 border-blue-500/20 bg-background/50 backdrop-blur" 
                           value={originCity}
@@ -187,8 +187,9 @@ export function CarbonCalculatorForm() {
                         />
                       </div>
                       <div className="col-span-2 sm:col-span-1 z-10">
-                        <FormLabel className="text-xs font-bold text-blue-600 dark:text-blue-400">Destination</FormLabel>
+                        <FormLabel htmlFor="destinationCity" className="text-xs font-bold text-blue-600 dark:text-blue-400">Destination</FormLabel>
                         <Input 
+                          id="destinationCity"
                           placeholder="e.g. Boston, MA" 
                           className="mt-1 border-blue-500/20 bg-background/50 backdrop-blur" 
                           value={destinationCity}
@@ -209,13 +210,20 @@ export function CarbonCalculatorForm() {
                         name="transportation"
                         render={({ field }) => (
                           <FormItem className="group">
-                            <FormLabel className="flex items-center gap-2 group-focus-within:text-green-600 transition-colors">
-                              <Car className="w-4 h-4" /> Transportation
+                            <FormLabel className="flex items-center gap-2 group-focus-within:text-green-600 transition-colors relative text-base font-semibold">
+                              <Car className="w-5 h-5" /> Transportation
+                              <div className="relative group/info ml-1 inline-flex items-center">
+                                <Info className="w-4 h-4 text-muted-foreground group-hover/info:text-green-500 transition-colors cursor-help" />
+                                <div className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 p-3 rounded-xl bg-card border shadow-[0_0_20px_rgba(34,197,94,0.3)] transition-all duration-300 text-xs font-normal text-muted-foreground pointer-events-none opacity-0 invisible group-hover/info:opacity-100 group-hover/info:visible">
+                                  <span className="font-bold text-green-500 block mb-1">Eco-Tip: Transportation</span>
+                                  Passenger cars account for over 40% of transport emissions. Carpooling or taking public transit can slice this number in half instantly!
+                                </div>
+                              </div>
                             </FormLabel>
                             <FormControl>
-                              <div className="relative">
-                                <Input type="number" aria-describedby="transport-desc" className="pl-4 pr-12 focus-visible:ring-green-500 transition-all" {...field} />
-                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm font-medium">km</span>
+                              <div className="relative group/input">
+                                <Input type="number" aria-describedby="transport-desc" className="h-14 text-lg pl-4 pr-12 focus-visible:ring-green-500 hover:shadow-[0_0_15px_rgba(34,197,94,0.2)] transition-all duration-300" {...field} />
+                                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground text-base font-medium group-hover/input:text-green-500 transition-colors">km</span>
                               </div>
                             </FormControl>
                             <FormDescription id="transport-desc">Distance traveled by car per month.</FormDescription>
@@ -232,13 +240,20 @@ export function CarbonCalculatorForm() {
                       name="electricity"
                       render={({ field }) => (
                         <FormItem className="group">
-                          <FormLabel className="flex items-center gap-2 group-focus-within:text-yellow-500 transition-colors">
-                            <Zap className="w-4 h-4" /> Electricity Usage
+                          <FormLabel className="flex items-center gap-2 group-focus-within:text-yellow-500 transition-colors relative text-base font-semibold">
+                            <Zap className="w-5 h-5" /> Electricity Usage
+                            <div className="relative group/info ml-1 inline-flex items-center">
+                              <Info className="w-4 h-4 text-muted-foreground group-hover/info:text-yellow-500 transition-colors cursor-help" />
+                              <div className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 p-3 rounded-xl bg-card border shadow-[0_0_20px_rgba(234,179,8,0.3)] transition-all duration-300 text-xs font-normal text-muted-foreground pointer-events-none opacity-0 invisible group-hover/info:opacity-100 group-hover/info:visible">
+                                <span className="font-bold text-yellow-500 block mb-1">Eco-Tip: Energy</span>
+                                Phantom energy (devices plugged in but off) accounts for 10% of home electricity. Unplug chargers to reduce baseline draw!
+                              </div>
+                            </div>
                           </FormLabel>
                           <FormControl>
-                              <div className="relative">
-                                <Input type="number" aria-describedby="electricity-desc" className="pl-4 pr-14 focus-visible:ring-yellow-500 transition-all" {...field} />
-                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm font-medium">kWh</span>
+                              <div className="relative group/input">
+                                <Input type="number" aria-describedby="electricity-desc" className="h-14 text-lg pl-4 pr-14 focus-visible:ring-yellow-500 hover:shadow-[0_0_15px_rgba(234,179,8,0.2)] transition-all duration-300" {...field} />
+                                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground text-base font-medium group-hover/input:text-yellow-500 transition-colors">kWh</span>
                               </div>
                             </FormControl>
                             <FormDescription id="electricity-desc">Home electricity usage per month.</FormDescription>
@@ -248,43 +263,59 @@ export function CarbonCalculatorForm() {
                     />
                   </motion.div>
 
-                  <motion.div variants={itemVariants} className="grid grid-cols-2 gap-4">
+                  <motion.div variants={itemVariants}>
                     <FormField
                       control={form.control}
                       name="food"
                       render={({ field }) => (
                         <FormItem className="group">
-                          <FormLabel className="flex items-center gap-2 group-focus-within:text-orange-500 transition-colors text-sm">
-                            <Utensils className="w-4 h-4" /> Food
+                          <FormLabel className="flex items-center gap-2 group-focus-within:text-orange-500 transition-colors relative text-base font-semibold">
+                            <Utensils className="w-5 h-5" /> Food Waste
+                            <div className="relative group/info ml-1 inline-flex items-center">
+                              <Info className="w-4 h-4 text-muted-foreground group-hover/info:text-orange-500 transition-colors cursor-help" />
+                              <div className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 p-3 rounded-xl bg-card border shadow-[0_0_20px_rgba(249,115,22,0.3)] transition-all duration-300 text-xs font-normal text-muted-foreground pointer-events-none opacity-0 invisible group-hover/info:opacity-100 group-hover/info:visible">
+                                <span className="font-bold text-orange-500 block mb-1">Eco-Tip: Diet</span>
+                                Beef emits 20x more GHGs than plant proteins. Eating local and seasonal slashes transport emissions.
+                              </div>
+                            </div>
                           </FormLabel>
                           <FormControl>
-                              <div className="relative">
-                                <Input type="number" aria-describedby="food-desc" className="pl-2 pr-8 focus-visible:ring-orange-500 transition-all" {...field} />
-                                <span className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground text-xs font-medium">kg</span>
+                              <div className="relative group/input">
+                                <Input type="number" aria-describedby="food-desc" className="h-14 text-lg pl-4 pr-12 focus-visible:ring-orange-500 hover:shadow-[0_0_15px_rgba(249,115,22,0.2)] transition-all duration-300" {...field} />
+                                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground text-base font-medium group-hover/input:text-orange-500 transition-colors">kg</span>
                               </div>
                             </FormControl>
                             <FormDescription id="food-desc" className="sr-only">Monthly food waste in kg</FormDescription>
-                          <FormMessage className="text-red-500 text-xs" />
+                          <FormMessage className="text-red-500" />
                         </FormItem>
                       )}
                     />
+                  </motion.div>
 
+                  <motion.div variants={itemVariants}>
                     <FormField
                       control={form.control}
                       name="waste"
                       render={({ field }) => (
                         <FormItem className="group">
-                          <FormLabel className="flex items-center gap-2 group-focus-within:text-stone-500 transition-colors text-sm">
-                            <Trash2 className="w-4 h-4" /> Waste
+                          <FormLabel className="flex items-center gap-2 group-focus-within:text-stone-500 transition-colors relative text-base font-semibold">
+                            <Trash2 className="w-5 h-5" /> General Waste
+                            <div className="relative group/info ml-1 inline-flex items-center">
+                              <Info className="w-4 h-4 text-muted-foreground group-hover/info:text-stone-500 transition-colors cursor-help" />
+                              <div className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 p-3 rounded-xl bg-card border shadow-[0_0_20px_rgba(120,113,108,0.3)] transition-all duration-300 text-xs font-normal text-muted-foreground pointer-events-none opacity-0 invisible group-hover/info:opacity-100 group-hover/info:visible">
+                                <span className="font-bold text-stone-500 block mb-1">Eco-Tip: Waste</span>
+                                Organic waste in landfills produces methane, a gas 25x more potent than CO2. Composting is the key!
+                              </div>
+                            </div>
                           </FormLabel>
                           <FormControl>
-                              <div className="relative">
-                                <Input type="number" aria-describedby="waste-desc" className="pl-2 pr-8 focus-visible:ring-stone-500 transition-all" {...field} />
-                                <span className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground text-xs font-medium">kg</span>
+                              <div className="relative group/input">
+                                <Input type="number" aria-describedby="waste-desc" className="h-14 text-lg pl-4 pr-12 focus-visible:ring-stone-500 hover:shadow-[0_0_15px_rgba(120,113,108,0.2)] transition-all duration-300" {...field} />
+                                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground text-base font-medium group-hover/input:text-stone-500 transition-colors">kg</span>
                               </div>
                             </FormControl>
                             <FormDescription id="waste-desc" className="sr-only">Monthly solid waste in kg</FormDescription>
-                          <FormMessage className="text-red-500 text-xs" />
+                          <FormMessage className="text-red-500" />
                         </FormItem>
                       )}
                     />
@@ -296,8 +327,8 @@ export function CarbonCalculatorForm() {
                     </motion.div>
                   )}
 
-                  <motion.div variants={itemVariants}>
-                    <Button type="submit" disabled={isSubmitting} className="w-full bg-green-600 hover:bg-green-700 text-white transition-all hover:shadow-[0_0_20px_rgba(22,163,74,0.4)] hover:-translate-y-1">
+                  <motion.div variants={itemVariants} className="pt-4 mt-auto">
+                    <Button type="submit" disabled={isSubmitting} className="w-full h-14 text-lg bg-green-600 hover:bg-green-700 text-white transition-all hover:shadow-[0_0_30px_rgba(22,163,74,0.4)] hover:-translate-y-1 font-bold rounded-xl">
                       {isSubmitting ? (
                         <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
                       ) : (
@@ -348,7 +379,7 @@ export function CarbonCalculatorForm() {
                 <Sparkles className="w-6 h-6 text-blue-500 flex-shrink-0 animate-pulse" />
                 <div>
                   <h3 className="text-sm font-bold text-blue-600 dark:text-blue-400 mb-1">Gemini AI Insight</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <div className="text-sm text-muted-foreground leading-relaxed">
                     {isGettingAdvice ? (
                       <span className="flex items-center gap-2"><RefreshCw className="w-3 h-3 animate-spin" /> Analyzing your footprint...</span>
                     ) : (
@@ -382,7 +413,7 @@ export function CarbonCalculatorForm() {
                         )}
                       </div>
                     )}
-                  </p>
+                  </div>
                 </div>
               </div>
             </motion.div>

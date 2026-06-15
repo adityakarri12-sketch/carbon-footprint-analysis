@@ -1,6 +1,7 @@
 import { CarbonFootprintService } from '@/application/carbon-footprint/carbon-footprint.service';
 import { GoalService } from '@/application/goal/goal.service';
 import { RecommendationService } from '@/application/recommendation/recommendation.service';
+import { PrismaClient } from '@prisma/client';
 
 // Mock Prisma
 jest.mock('@prisma/client', () => {
@@ -73,7 +74,7 @@ describe('Backend Services Integration', () => {
     });
 
     it('fails to update unauthorized goal', async () => {
-      const mPrisma = require('@prisma/client').PrismaClient();
+      const mPrisma = (PrismaClient as unknown as jest.Mock)();
       mPrisma.goal.findFirst.mockResolvedValueOnce(null);
       const service = new GoalService();
       await expect(service.updateGoal('goal_2', userId, { isCompleted: true })).rejects.toThrow('Goal not found or user not authorized');
@@ -86,7 +87,7 @@ describe('Backend Services Integration', () => {
     });
 
     it('fails to delete unauthorized goal', async () => {
-      const mPrisma = require('@prisma/client').PrismaClient();
+      const mPrisma = (PrismaClient as unknown as jest.Mock)();
       mPrisma.goal.findFirst.mockResolvedValueOnce(null);
       const service = new GoalService();
       await expect(service.deleteGoal('goal_2', userId)).rejects.toThrow('Goal not found or user not authorized');
@@ -95,7 +96,7 @@ describe('Backend Services Integration', () => {
 
   describe('RecommendationService', () => {
     it('fetches generic recommendations for new users', async () => {
-      const mPrisma = require('@prisma/client').PrismaClient();
+      const mPrisma = (PrismaClient as unknown as jest.Mock)();
       mPrisma.footprintRecord.findFirst.mockResolvedValueOnce(null);
       const service = new RecommendationService();
       const recs = await service.getRecommendations(userId);
@@ -104,7 +105,7 @@ describe('Backend Services Integration', () => {
     });
 
     it('fetches personalized recommendations', async () => {
-      const mPrisma = require('@prisma/client').PrismaClient();
+      const mPrisma = (PrismaClient as unknown as jest.Mock)();
       mPrisma.footprintRecord.findFirst.mockResolvedValueOnce({
         transportation: 100, electricity: 50, food: 30, waste: 10
       });

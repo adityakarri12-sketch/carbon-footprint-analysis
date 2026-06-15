@@ -1,9 +1,15 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { GoogleGenAI } from '@google/genai';
+import { z } from 'zod';
+import DOMPurify from 'isomorphic-dompurify';
 
 // Initialize the Google Gen AI client if the key is present
 const ai = process.env.GEMINI_API_KEY ? new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY }) : null;
+
+const chatSchema = z.object({
+  message: z.string().min(1).max(1000),
+});
 
 export async function POST(req: Request) {
   try {
@@ -13,7 +19,10 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { message } = body;
+    const data = chatSchema.parse(body);
+
+    // Sanitize input to prevent XSS / Prompt Injection payloads containing malicious HTML
+    const sanitizedMessage = DOMPurify.sanitize(data.message);
 
     // Check if the real API key is configured
     if (!ai) {
@@ -31,7 +40,7 @@ export async function POST(req: Request) {
         {
           role: 'user',
           parts: [
-            { text: `You are an expert carbon footprint advisor. The user is asking: "${message}". Provide a concise, actionable sustainability strategy.` }
+            { text: `You are an expert carbon footprint advisor. The user is asking: "${sanitizedMessage}". Provide a concise, actionable sustainability strategy.` }
           ]
         }
       ],

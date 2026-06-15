@@ -2,6 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   async headers() {
+    const isDev = process.env.NODE_ENV !== 'production';
+    const csp = `default-src 'self'; script-src 'self' 'unsafe-inline' ${isDev ? "'unsafe-eval'" : ""} https://maps.googleapis.com https://*.clerk.accounts.dev; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https://maps.gstatic.com https://maps.googleapis.com https://img.clerk.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://maps.googleapis.com wss://*.clerk.com https://*.clerk.com https://*.clerk.accounts.dev; frame-src 'self' https://challenges.cloudflare.com;`;
+
     return [
       {
         source: '/(.*)',
@@ -28,7 +31,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://maps.googleapis.com https://*.clerk.accounts.dev; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https://maps.gstatic.com https://maps.googleapis.com https://img.clerk.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://maps.googleapis.com wss://*.clerk.com https://*.clerk.com https://*.clerk.accounts.dev; frame-src 'self' https://challenges.cloudflare.com;",
+            value: csp.trim().replace(/\s+/g, ' '),
           }
         ],
       },

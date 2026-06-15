@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { UserButton, useAuth } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Calculator, Bot, User, Leaf, Menu, X, Camera } from "lucide-react";
+import { LayoutDashboard, PieChart, Bot, User, Leaf, Menu, X, Camera, Home } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -19,8 +19,9 @@ export function Navbar() {
   const { theme, setTheme } = useTheme();
 
   const navLinks = [
+    { href: "/", label: "Home", icon: Home },
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/calculator", label: "Calculator", icon: Calculator },
+    { href: "/visualizations", label: "Visualizations", icon: PieChart },
     { href: "/community", label: "Community", icon: User },
     { href: "/vision-scanner", label: "AI Scanner", icon: Camera },
     { href: "/advisor", label: "AI Advisor", icon: Bot },

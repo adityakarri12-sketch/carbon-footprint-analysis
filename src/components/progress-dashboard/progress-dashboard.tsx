@@ -36,8 +36,9 @@ export function ProgressDashboard() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchHistory();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, []);
 
   const handleClearHistory = async () => {
@@ -73,7 +74,7 @@ export function ProgressDashboard() {
               {latestFootprint.toFixed(1)} <span className="text-sm font-normal text-muted-foreground">/ {BUDGET_LIMIT} kg CO₂</span>
             </p>
           </div>
-          <div className={`text-sm font-bold px-3 py-1 rounded-full ${isOverBudget ? 'bg-red-500/10 text-red-500' : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'}`}>
+          <div className={`text-sm font-bold px-3 py-1 rounded-full animate-pulse transition-all ${isOverBudget ? 'bg-red-500/10 text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.4)]' : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.4)]'}`}>
             {isOverBudget ? 'OVER BUDGET' : 'ON TRACK'}
           </div>
         </div>

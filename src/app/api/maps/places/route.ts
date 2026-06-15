@@ -1,14 +1,23 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
+import { withErrorHandler } from '@/lib/api-handler';
 
-export async function GET(req: NextRequest) {
+const placesMapSchema = z.object({
+  lat: z.coerce.number().min(-90).max(90),
+  lng: z.coerce.number().min(-180).max(180),
+  type: z.enum(['ev', 'recycling']),
+});
+
+export const GET = withErrorHandler(async ({ req }) => {
   const { searchParams } = new URL(req.url);
-  const lat = searchParams.get('lat');
-  const lng = searchParams.get('lng');
-  const type = searchParams.get('type'); // 'recycling' or 'ev'
+  
+  const data = placesMapSchema.parse({
+    lat: searchParams.get('lat') || '',
+    lng: searchParams.get('lng') || '',
+    type: searchParams.get('type') || '',
+  });
 
-  if (!lat || !lng || !type) {
-    return NextResponse.json({ error: 'Lat, lng, and type are required' }, { status: 400 });
-  }
+  const { lat, lng, type } = data;
 
   const apiKey = process.env.GOOGLE_MAPS_DISTANCE_API_KEY;
   if (!apiKey) {
@@ -35,9 +44,21 @@ export async function GET(req: NextRequest) {
         throw new Error(data.error_message || 'Request Denied by Google Maps');
     }
 
+    interface GooglePlace {
+      place_id: string;
+      name: string;
+      formatted_address: string;
+      geometry: {
+        location: {
+          lat: number;
+          lng: number;
+        }
+      }
+    }
+
     if (data.results) {
       // Map it to the interface the frontend expects
-      const places = data.results.slice(0, 10).map((place: any) => ({
+      const places = data.results.slice(0, 10).map((place: GooglePlace) => ({
         id: place.place_id,
         name: place.name,
         lat: place.geometry.location.lat,
@@ -53,4 +74,4 @@ export async function GET(req: NextRequest) {
     console.error('Places API Error:', error);
     return NextResponse.json({ error: error instanceof Error ? error.message : 'Failed to fetch places' }, { status: 500 });
   }
-}
+});

@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { GoalList } from '../../src/components/goal-setting/goal-list';
 import '@testing-library/jest-dom';
 

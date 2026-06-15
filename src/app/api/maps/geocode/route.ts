@@ -1,12 +1,19 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
+import { withErrorHandler } from '@/lib/api-handler';
 
-export async function GET(req: NextRequest) {
+const geocodeSchema = z.object({
+  address: z.string().min(1).max(200),
+});
+
+export const GET = withErrorHandler(async ({ req }) => {
   const { searchParams } = new URL(req.url);
-  const address = searchParams.get('address');
+  
+  const data = geocodeSchema.parse({
+    address: searchParams.get('address') || '',
+  });
 
-  if (!address) {
-    return NextResponse.json({ error: 'Address/Country is required' }, { status: 400 });
-  }
+  const { address } = data;
 
   // We reuse the existing backend key which should now have Geocoding API enabled
   const apiKey = process.env.GOOGLE_MAPS_DISTANCE_API_KEY;
@@ -49,4 +56,4 @@ export async function GET(req: NextRequest) {
     console.error('Geocode API Error:', error);
     return NextResponse.json({ error: error instanceof Error ? error.message : 'Failed to fetch geocode' }, { status: 500 });
   }
-}
+});

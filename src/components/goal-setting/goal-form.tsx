@@ -60,7 +60,7 @@ export function GoalForm({ onGoalAdded }: GoalFormProps) {
       });
       form.reset({ description: "", targetDate: undefined });
       onGoalAdded();
-    } catch (_error) {
+    } catch {
       toast({
         title: "Error",
         description: "Something went wrong. Please try again.",

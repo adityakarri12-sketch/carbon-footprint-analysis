@@ -50,14 +50,14 @@ describe('Gemini Plan API', () => {
   });
 
   it('should return 401 if unauthorized', async () => {
-    (auth as jest.Mock).mockResolvedValueOnce({ userId: null });
+    (auth as unknown as jest.Mock).mockResolvedValueOnce({ userId: null });
     const req = new NextRequest('http://localhost:3000/api/gemini/plan', { method: 'POST' });
     const response = await POST(req);
     expect(response.status).toBe(401);
   });
 
   it('should hit the fallback if GEMINI_API_KEY is not set', async () => {
-    (auth as jest.Mock).mockResolvedValueOnce({ userId: 'test_user_123' });
+    (auth as unknown as jest.Mock).mockResolvedValueOnce({ userId: 'test_user_123' });
     delete process.env.GEMINI_API_KEY;
 
     const req = new NextRequest('http://localhost:3000/api/gemini/plan', { method: 'POST' });
@@ -69,7 +69,7 @@ describe('Gemini Plan API', () => {
   });
 
   it('should use Gemini API if GEMINI_API_KEY is set', async () => {
-    (auth as jest.Mock).mockResolvedValueOnce({ userId: 'test_user_123' });
+    (auth as unknown as jest.Mock).mockResolvedValueOnce({ userId: 'test_user_123' });
     process.env.GEMINI_API_KEY = "test_api_key";
 
     const req = new NextRequest('http://localhost:3000/api/gemini/plan', { method: 'POST' });

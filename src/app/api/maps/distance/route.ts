@@ -1,13 +1,21 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
+import { withErrorHandler } from '@/lib/api-handler';
 
-export async function GET(req: NextRequest) {
+const distanceSchema = z.object({
+  origin: z.string().min(1).max(200),
+  destination: z.string().min(1).max(200),
+});
+
+export const GET = withErrorHandler(async ({ req }) => {
   const { searchParams } = new URL(req.url);
-  const origin = searchParams.get('origin');
-  const destination = searchParams.get('destination');
+  
+  const data = distanceSchema.parse({
+    origin: searchParams.get('origin') || '',
+    destination: searchParams.get('destination') || '',
+  });
 
-  if (!origin || !destination) {
-    return NextResponse.json({ error: 'Origin and destination are required' }, { status: 400 });
-  }
+  const { origin, destination } = data;
 
   const apiKey = process.env.GOOGLE_MAPS_DISTANCE_API_KEY;
   if (!apiKey) {
@@ -46,4 +54,4 @@ export async function GET(req: NextRequest) {
     console.error('Distance Matrix Error:', error);
     return NextResponse.json({ error: error instanceof Error ? error.message : 'Failed to fetch distance' }, { status: 500 });
   }
-}
+});
