@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { UploadCloud, Image as ImageIcon, Leaf, Zap, RefreshCcw, CheckCircle2, ChevronRight, PieChart } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -158,8 +159,7 @@ export function VisionScanner() {
                   animate={{ opacity: 1 }}
                   className="w-full h-full relative rounded-[1.5rem] overflow-hidden shadow-inner"
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={imagePreview} alt="Uploaded item" className="w-full h-full object-cover" />
+                  <Image src={imagePreview} unoptimized fill alt="Uploaded item preview" className="object-cover" />
                   
                   {/* Laser Scanning Animation */}
                   {isLoading && (

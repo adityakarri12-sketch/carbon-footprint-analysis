@@ -542,7 +542,7 @@ export function AdvisorDashboard() {
                           <a 
                             href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
                             target="_blank"
-                            rel="noreferrer"
+                            rel="noopener noreferrer"
                             className="w-full bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 py-4 rounded-xl font-black text-lg flex justify-center items-center gap-3 hover:scale-[1.03] hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] transition-all"
                           >
                             <Globe className="w-5 h-5" /> Open in Maps

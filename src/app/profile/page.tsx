@@ -1,6 +1,7 @@
 "use client";
 
 import { useUser } from '@clerk/nextjs';
+import Image from 'next/image';
 import { useState } from "react";
 import { MapPin, Shield, Camera, Loader2, RefreshCw, Zap, Sparkles, Target, TrendingDown, Leaf, Activity, CheckCircle2, Server, Database, Code, Check, Cpu, Wifi, Globe, ShieldCheck, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -80,8 +81,7 @@ export default function ProfilePage() {
               
               <div className="relative group/avatar mb-8 mt-4">
                 <div className="absolute inset-0 bg-white/30 rounded-full animate-ping opacity-60 blur-md"></div>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={user?.imageUrl || "/placeholder.jpg"} alt="Avatar" className="w-36 h-36 rounded-full border-4 border-white relative z-10 shadow-[0_10px_25px_rgba(0,0,0,0.3)] object-cover group-hover/avatar:scale-105 transition-transform" />
+                <Image src={user?.imageUrl || "/placeholder.jpg"} width={144} height={144} alt="Avatar profile picture" className="w-36 h-36 rounded-full border-4 border-white relative z-10 shadow-[0_10px_25px_rgba(0,0,0,0.3)] object-cover group-hover/avatar:scale-105 transition-transform" />
                 <div className="absolute bottom-1 right-1 bg-blue-500 p-2.5 rounded-full border-2 border-white z-20 shadow-lg hover:bg-blue-600 transition-colors">
                   <Camera className="w-4 h-4 text-white" />
                 </div>

@@ -16,6 +16,6 @@ export const CONSTANTS = {
 
   // Models
   MODELS: {
-    GEMINI_FAST: 'gemini-2.5-flash',
+    GEMINI_FAST: 'gemini-flash-latest',
   },
 };

@@ -32,6 +32,10 @@ const nextConfig: NextConfig = {
           {
             key: 'Content-Security-Policy',
             value: csp.trim().replace(/\s+/g, ' '),
+          },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(self), microphone=(), geolocation=(self), browsing-topics=()',
           }
         ],
       },
