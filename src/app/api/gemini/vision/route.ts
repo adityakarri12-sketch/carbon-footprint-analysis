@@ -32,18 +32,16 @@ export const POST = withErrorHandler(async ({ req, userId }) => {
     // Use fast multi-modal model
     const model = genAI.getGenerativeModel({ model: CONSTANTS.MODELS.GEMINI_FAST });
 
-    const prompt = `You are an expert environmental AI. Analyze the image provided.
-    Identify the main object (e.g., a car, a steak, an appliance, a plastic bottle).
-    Estimate its carbon footprint in kg CO2e (provide a single number or tight range).
-    Suggest a greener alternative or an eco-friendly action regarding this item.
+    const prompt = `You are a highly precise environmental AI analyst. Carefully analyze the uploaded image to identify the main object or material shown.
     
-    You MUST respond with a strict JSON object with EXACTLY these keys:
-    "itemName" (string)
-    "estimatedFootprint" (number)
-    "ecoAlternative" (string)
-    "details" (string, brief explanation)
+    You MUST respond with a strict JSON object containing EXACTLY these keys:
+    1. "itemName" (string): The highly specific name of the identified object.
+    2. "estimatedFootprint" (number): The estimated carbon footprint in kg CO2e (just a single accurate number).
+    3. "ecoAlternative" (string): A practical, greener alternative or action.
+    4. "details" (string): A brief, 1-2 sentence explanation of its environmental impact.
+    5. "materials" (array of objects): A breakdown of what it's made of. Each object must have "name" (string) and "percentage" (number). Ensure percentages add up to 100.
     
-    Do not include markdown wrappers like \`\`\`json. Return raw JSON only.`;
+    Do not include markdown wrappers like \`\`\`json. Return raw, parseable JSON only.`;
 
     const imageParts = [
       {
