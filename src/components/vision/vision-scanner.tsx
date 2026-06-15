@@ -42,23 +42,36 @@ export function VisionScanner() {
     reader.readAsDataURL(file);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const analyzeImage = async (_base64Url: string, _mimeType: string) => {
+  const analyzeImage = async (base64Url: string, mimeType: string) => {
     setIsLoading(true);
     try {
-      // Simulate network request + AI processing time
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      // Extract the raw base64 data (remove the data:image/...;base64, prefix)
+      const base64Data = base64Url.split(',')[1];
       
-      // Mock result with new materials breakdown
+      const res = await fetch('/api/gemini/vision', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          base64Image: base64Data,
+          mimeType: mimeType
+        })
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to analyze image');
+      }
+
+      const data = await res.json();
+      
+      // Standardize response fields to match UI expectations
       setResult({
-        itemName: "Plastic Water Bottle",
-        estimatedFootprint: 0.08,
-        ecoAlternative: "Reusable Stainless Steel Bottle",
-        details: "Single-use plastics contribute heavily to landfill and ocean waste. Switching to a reusable alternative saves an average of 156 bottles annually per person.",
-        materials: [
-          { name: "PET Plastic", percentage: 95 },
-          { name: "Paper Label", percentage: 5 }
-        ]
+        itemName: data.itemName || "Unknown Object",
+        estimatedFootprint: data.estimatedFootprint || 0,
+        ecoAlternative: data.ecoAlternative || "N/A",
+        details: data.details || "",
+        materials: data.materials || []
       });
     } catch (error) {
       console.error(error);
