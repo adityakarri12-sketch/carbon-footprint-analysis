@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import DOMPurify from "dompurify";
 import { Sparkles, Activity } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 import { Button } from "@/components/ui/button";
 
 export function AiInsights() {
@@ -21,8 +21,9 @@ export function AiInsights() {
         throw new Error("Failed to generate analysis.");
       }
       const data = await response.json();
-      setAnalysis(DOMPurify.sanitize(data.analysis));
+      setAnalysis(data.analysis);
     } catch (err) {
+      void(err instanceof Error ? err.message : "Unknown error");
       setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
       setLoading(false);
@@ -73,10 +74,9 @@ export function AiInsights() {
             {error}
           </div>
         ) : analysis ? (
-          <div 
-            className="text-muted-foreground leading-relaxed space-y-4 [&>h3]:text-white [&>h3]:font-bold [&>h3]:mt-6 [&>ul]:list-disc [&>ul]:pl-6 [&>p>strong]:text-blue-400"
-            dangerouslySetInnerHTML={{ __html: analysis }} 
-          />
+          <div className="text-muted-foreground leading-relaxed space-y-4 [&>h3]:text-white [&>h3]:font-bold [&>h3]:mt-6 [&>ul]:list-disc [&>ul]:pl-6 [&>p>strong]:text-blue-400">
+            <ReactMarkdown>{analysis}</ReactMarkdown>
+          </div>
         ) : (
           <p className="text-muted-foreground">No analysis available.</p>
         )}

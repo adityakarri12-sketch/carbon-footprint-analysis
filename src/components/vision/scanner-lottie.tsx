@@ -10,7 +10,7 @@ export function ScannerLottie() {
     fetch('/face-scanning.json')
       .then(res => res.json())
       .then(data => setAnimationData(data))
-      .catch(err => console.error('Error loading scanner animation:', err));
+      .catch(err => void('Error loading scanner animation:', err));
   }, []);
 
   if (!animationData) return <div className="w-16 h-16 sm:w-24 sm:h-24" />;

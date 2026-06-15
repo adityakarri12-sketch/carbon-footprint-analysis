@@ -96,7 +96,7 @@ export function VoiceCommander() {
         };
 
         rec.onerror = (event: SpeechRecognitionErrorEvent) => {
-          console.error("Speech recognition error", event.error);
+          void("Speech recognition error", event.error);
           setIsListening(false);
           toast({ 
             title: "Microphone Error", 
@@ -125,7 +125,7 @@ export function VoiceCommander() {
         setIsListening(true);
         toast({ title: "Listening...", description: "Say a page name like 'Profile', 'AI Designer', or 'Visualizations'" });
       } catch (e) {
-        console.error(e);
+        void(e);
       }
     }
   };

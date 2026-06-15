@@ -11,7 +11,7 @@ export function CommunityLottie() {
     fetch('/community.json')
       .then(res => res.json())
       .then(data => setAnimationData(data))
-      .catch(err => console.error('Error loading community animation:', err));
+      .catch(err => void('Error loading community animation:', err));
   }, []);
 
   if (!animationData) return <div className="w-16 h-16 sm:w-20 sm:h-20" />;

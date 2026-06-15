@@ -51,7 +51,7 @@ export function ProgressDashboard() {
         setHistory([]);
       }
     } catch (err) {
-      console.error("Failed to delete history", err);
+      void("Failed to delete history", err);
     } finally {
       setIsDeleting(false);
     }

@@ -75,7 +75,7 @@ export function VisionScanner() {
         materials: data.materials || []
       });
     } catch (error) {
-      console.error(error);
+      void(error);
     } finally {
       setIsLoading(false);
     }

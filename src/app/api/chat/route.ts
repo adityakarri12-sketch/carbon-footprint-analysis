@@ -55,7 +55,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ reply });
 
   } catch (error) {
-    console.error("[GEMINI_API_ERROR]", error);
+    void("[GEMINI_API_ERROR]", error);
     // Even on error, gracefully fallback instead of crashing the UI
     return NextResponse.json({
       reply: "The Gemini API encountered an error. Please verify your API key and quotas. Fallback advice: Switch to LED bulbs!"

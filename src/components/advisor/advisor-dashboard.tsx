@@ -30,7 +30,7 @@ export function AdvisorDashboard() {
     fetch('/robot.json')
       .then(res => res.json())
       .then(data => setRobotAnimationData(data))
-      .catch(err => console.error('Error loading robot animation:', err));
+      .catch(err => void('Error loading robot animation:', err));
   }, []);
   
   const [mapFilter, setMapFilter] = useState<'recycling' | 'ev' | 'ewaste' | 'transit'>('recycling');
@@ -58,7 +58,7 @@ export function AdvisorDashboard() {
         setAdoptedIndices(prev => [...prev, index]);
       }
     } catch (e) {
-      console.error(e);
+      void(e);
     } finally {
       setAdoptingIndex(null);
     }

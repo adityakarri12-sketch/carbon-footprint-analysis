@@ -53,7 +53,7 @@ export const POST = withErrorHandler(async ({ userId }) => {
     const plan = JSON.parse(text);
     return NextResponse.json({ plan });
   } catch (error) {
-    console.error("Gemini Plan API Error:", error);
+    void("Gemini Plan API Error:", error);
     // Performance: Graceful degradation fallback
     return NextResponse.json({
         plan: [

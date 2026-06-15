@@ -38,7 +38,7 @@ export function FootprintHistory() {
         setHistory(data.sort((a: FootprintRecord, b: FootprintRecord) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()));
       }
     } catch (error) {
-      console.error('Failed to fetch history:', error);
+      void('Failed to fetch history:', error);
     } finally {
       setLoading(false);
     }
@@ -59,7 +59,7 @@ export function FootprintHistory() {
         setHistory([]);
       }
     } catch (error) {
-      console.error("Failed to delete history", error);
+      void("Failed to delete history", error);
     } finally {
       setIsDeleting(false);
     }
@@ -133,8 +133,7 @@ export function FootprintHistory() {
             <Tooltip 
               contentStyle={CustomTooltipStyle}
               itemStyle={{ color: '#fff', fontWeight: 'bold' }}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              formatter={(value: any) => [`${value} kg CO₂e`, 'Emissions']}
+              formatter={(value: string | number) => [`${value} kg CO₂e`, 'Emissions']}
             />
             <Legend verticalAlign="bottom" height={36} iconType="circle" />
           </PieChart>
@@ -149,8 +148,7 @@ export function FootprintHistory() {
             <CartesianGrid strokeDasharray="3 3" opacity={0.2} vertical={false} />
             <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }} dy={10} />
             <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }} />
-            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-            <Tooltip cursor={{ fill: 'rgba(34,197,94,0.1)' }} contentStyle={CustomTooltipStyle} formatter={(value: any) => [`${value} kg CO₂e`, 'Monthly Footprint']} />
+            <Tooltip cursor={{ fill: 'rgba(34,197,94,0.1)' }} contentStyle={CustomTooltipStyle} formatter={(value: string | number) => [`${value} kg CO₂e`, 'Monthly Footprint']} />
             <Bar dataKey="value" fill="#3b82f6" radius={[4, 4, 0, 0]} />
           </BarChart>
         ) : chartType === 'AreaChart' ? (
@@ -164,8 +162,7 @@ export function FootprintHistory() {
             <CartesianGrid strokeDasharray="3 3" opacity={0.2} vertical={false} />
             <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }} dy={10} />
             <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }} />
-            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-            <Tooltip contentStyle={CustomTooltipStyle} formatter={(value: any) => [`${value} kg CO₂e`, 'Monthly Footprint']} />
+            <Tooltip contentStyle={CustomTooltipStyle} formatter={(value: string | number) => [`${value} kg CO₂e`, 'Monthly Footprint']} />
             <Area type="monotone" dataKey="value" stroke="#8b5cf6" strokeWidth={3} fillOpacity={1} fill="url(#colorValue)" />
           </AreaChart>
         ) : (
@@ -173,8 +170,7 @@ export function FootprintHistory() {
             <CartesianGrid strokeDasharray="3 3" opacity={0.2} vertical={false} />
             <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }} dy={10} />
             <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }} />
-            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-            <Tooltip contentStyle={CustomTooltipStyle} formatter={(value: any) => [`${value} kg CO₂e`, 'Monthly Footprint']} />
+            <Tooltip contentStyle={CustomTooltipStyle} formatter={(value: string | number) => [`${value} kg CO₂e`, 'Monthly Footprint']} />
             <Line type="monotone" dataKey="value" stroke="#22c55e" strokeWidth={3} dot={{ r: 5, fill: '#22c55e', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 8, strokeWidth: 0 }} />
           </LineChart>
         )}

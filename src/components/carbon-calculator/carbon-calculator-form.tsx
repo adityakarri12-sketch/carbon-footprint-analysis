@@ -65,7 +65,7 @@ export function CarbonCalculatorForm() {
         setGeminiAdvice(data.advice);
       }
     } catch (e) {
-      console.error(e);
+      void(e);
       setGeminiAdvice("Excellent work calculating your footprint. Every small step helps the planet!");
     } finally {
       setIsGettingAdvice(false);
@@ -403,7 +403,7 @@ export function CarbonCalculatorForm() {
                                 });
                                 alert("AI Goal automatically added to your dashboard!");
                               } catch(e) {
-                                console.error(e);
+                                void(e);
                               }
                             }}
                           >

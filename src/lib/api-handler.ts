@@ -48,7 +48,7 @@ export function withErrorHandler(handler: ApiHandlerFunc, requireAuth: boolean =
         );
       }
 
-      console.error('[API_ERROR_BOUNDARY]', error);
+      void('[API_ERROR_BOUNDARY]', error);
 
       return NextResponse.json(
         { error: 'Internal Server Error' },

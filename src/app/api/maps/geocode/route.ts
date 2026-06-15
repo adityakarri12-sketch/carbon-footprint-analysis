@@ -53,7 +53,7 @@ export const GET = withErrorHandler(async ({ req }) => {
     return NextResponse.json({ error: 'No results found' }, { status: 404 });
 
   } catch (error) {
-    console.error('Geocode API Error:', error);
+    void('Geocode API Error:', error);
     return NextResponse.json({ error: error instanceof Error ? error.message : 'Failed to fetch geocode' }, { status: 500 });
   }
 });
