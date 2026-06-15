@@ -51,7 +51,7 @@ export function ProgressDashboard() {
         setHistory([]);
       }
     } catch (err) {
-      void(err);
+      setError(err instanceof Error ? err.message : "Failed to clear history");
     } finally {
       setIsDeleting(false);
     }
@@ -74,11 +74,22 @@ export function ProgressDashboard() {
               {latestFootprint.toFixed(1)} <span className="text-sm font-normal text-muted-foreground">/ {BUDGET_LIMIT} kg CO₂</span>
             </p>
           </div>
-          <div className={`text-sm font-bold px-3 py-1 rounded-full animate-pulse transition-all ${isOverBudget ? 'bg-red-500/10 text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.4)]' : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.4)]'}`}>
+          <div 
+            className={`text-sm font-bold px-3 py-1 rounded-full animate-pulse transition-all ${isOverBudget ? 'bg-red-500/10 text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.4)]' : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.4)]'}`}
+            role="status"
+          >
             {isOverBudget ? 'OVER BUDGET' : 'ON TRACK'}
           </div>
         </div>
-        <div className="h-4 w-full bg-muted rounded-full overflow-hidden">
+        <div 
+          className="h-4 w-full bg-muted rounded-full overflow-hidden"
+          role="progressbar" 
+          aria-valuenow={Math.round(budgetPercentage)} 
+          aria-valuemin={0} 
+          aria-valuemax={100} 
+          aria-label="Monthly Carbon Budget Progress" 
+          data-testid="progress-budget-bar"
+        >
           <div 
             className={`h-full transition-all duration-1000 ${isOverBudget ? 'bg-red-500' : 'bg-gradient-to-r from-emerald-400 to-green-500'}`}
             style={{ width: `${budgetPercentage}%` }}
@@ -91,6 +102,7 @@ export function ProgressDashboard() {
           size="sm" 
           onClick={fetchHistory} 
           disabled={loading}
+          aria-label="Refresh footprint history"
           className="gap-2 transition-all hover:scale-105 hover:bg-emerald-500/10 hover:text-emerald-500 hover:border-emerald-500/30"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -100,6 +112,7 @@ export function ProgressDashboard() {
           variant="outline" 
           size="sm" 
           onClick={() => setIsFullscreen(!isFullscreen)}
+          aria-label={isFullscreen ? "Minimize dashboard" : "View full screen dashboard"}
           className="gap-2 transition-all hover:scale-105 hover:bg-emerald-500/10 hover:text-emerald-500 hover:border-emerald-500/30"
         >
           {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
@@ -110,15 +123,16 @@ export function ProgressDashboard() {
           size="sm" 
           onClick={handleClearHistory} 
           disabled={isDeleting}
+          aria-label="Clear all footprint data"
           className="gap-2 transition-all hover:scale-105 hover:shadow-[0_0_15px_rgba(239,68,68,0.5)]"
         >
           <Trash2 className="w-4 h-4" /> <span className="hidden sm:inline">{isDeleting ? "Deleting..." : "Clear Data"}</span>
         </Button>
       </div>
 
-      <div className={isFullscreen ? "overflow-y-auto max-h-[70vh] border rounded-lg" : ""}>
-        {loading && <p className="text-muted-foreground animate-pulse p-4 font-mono">Loading progress...</p>}
-        {error && <p className="text-red-500 p-4">{error}</p>}
+      <div className={isFullscreen ? "overflow-y-auto max-h-[70vh] border rounded-lg" : ""} aria-live="polite">
+        {loading && <p className="text-muted-foreground animate-pulse p-4 font-mono" data-testid="progress-loading">Loading progress...</p>}
+        {error && <p className="text-red-500 p-4" data-testid="progress-error">{error}</p>}
         {!loading && !error && (
           <Table>
             <TableHeader className={isFullscreen ? "sticky top-0 bg-card z-10 shadow-sm" : ""}>
@@ -131,7 +145,7 @@ export function ProgressDashboard() {
             <TableBody>
               {displayHistory.length > 0 ? (
                 displayHistory.map((record) => (
-                  <TableRow key={record.id} className="hover:bg-muted/50 transition-colors">
+                  <TableRow key={record.id} className="hover:bg-muted/50 transition-colors" data-testid="progress-row">
                     <TableCell className="font-mono text-sm">{new Date(record.createdAt).toLocaleDateString()}</TableCell>
                     <TableCell className="text-right font-bold text-emerald-600 dark:text-emerald-400 font-mono">
                       {(record.monthlyFootprint || 0).toFixed(2)}
@@ -143,7 +157,7 @@ export function ProgressDashboard() {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={3} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={3} className="text-center py-8 text-muted-foreground" data-testid="progress-empty">
                     No history yet. Calculate your footprint to get started!
                   </TableCell>
                 </TableRow>

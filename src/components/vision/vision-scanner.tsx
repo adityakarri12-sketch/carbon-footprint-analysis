@@ -23,16 +23,27 @@ export function VisionScanner() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [isLogged, setIsLogged] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const MAX_FILE_SIZE_MB = 5;
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     setResult(null);
+    
+    // Security: Validate file size before loading into memory
+    if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+      setError(`File is too large. Please upload an image smaller than ${MAX_FILE_SIZE_MB}MB.`);
+      return;
+    }
+    
     setImagePreview(null);
     setIsLogged(false);
+    setError(null);
 
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -75,7 +86,7 @@ export function VisionScanner() {
         materials: data.materials || []
       });
     } catch (error) {
-      void(error);
+      setError(error instanceof Error ? error.message : "Failed to analyze image");
     } finally {
       setIsLoading(false);
     }
@@ -85,10 +96,17 @@ export function VisionScanner() {
     fileInputRef.current?.click();
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      triggerUpload();
+    }
+  };
+
   const reset = () => {
     setImagePreview(null);
     setResult(null);
     setIsLogged(false);
+    setError(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
@@ -136,7 +154,12 @@ export function VisionScanner() {
                   animate={{ opacity: 1, scale: 1 }} 
                   exit={{ opacity: 0, scale: 0.9 }}
                   className="w-full h-full border-2 border-dashed border-muted-foreground/30 rounded-[1.5rem] flex flex-col items-center justify-center p-8 text-center cursor-pointer group-hover:border-indigo-500/50 transition-colors bg-card/50"
+                  role="button"
+                  tabIndex={0}
                   onClick={triggerUpload}
+                  onKeyDown={handleKeyDown}
+                  aria-label="Upload an image for analysis"
+                  data-testid="upload-dropzone"
                 >
                   <motion.div 
                     whileHover={{ scale: 1.1, rotate: 5 }}
@@ -192,7 +215,7 @@ export function VisionScanner() {
         </motion.section>
 
         {/* Results Section - 3D Flip Container */}
-        <section className="relative perspective-1000 min-h-[500px]">
+        <section className="relative perspective-1000 min-h-[500px]" aria-live="polite" aria-atomic="true">
           <AnimatePresence mode="wait">
             {isLoading ? (
               <motion.div 
@@ -201,6 +224,7 @@ export function VisionScanner() {
                 animate={{ opacity: 1, rotateY: 0 }}
                 exit={{ opacity: 0, rotateY: 90 }}
                 transition={{ duration: 0.5 }}
+                data-testid="vision-loading"
                 className="absolute inset-0 bg-card border rounded-[2rem] shadow-xl flex flex-col items-center justify-center text-center p-8 transform-style-3d backface-hidden"
               >
                 <div className="relative mb-8">
@@ -212,11 +236,27 @@ export function VisionScanner() {
                 <h3 className="text-2xl font-black mb-2">Analyzing with Gemini...</h3>
                 <p className="text-muted-foreground font-medium">Extracting materials, calculating impact, finding alternatives.</p>
               </motion.div>
+            ) : error ? (
+              <motion.div 
+                key="error"
+                initial={{ opacity: 0, rotateY: -90 }}
+                animate={{ opacity: 1, rotateY: 0 }}
+                data-testid="vision-error"
+                className="absolute inset-0 bg-card border-2 border-red-500/20 rounded-[2rem] shadow-xl flex flex-col items-center justify-center text-center p-8 transform-style-3d backface-hidden"
+              >
+                <div className="w-24 h-24 bg-red-500/10 rounded-full flex items-center justify-center mb-6">
+                  <RefreshCcw className="w-10 h-10 text-red-500" />
+                </div>
+                <h3 className="text-2xl font-bold mb-2 text-red-500">Analysis Failed</h3>
+                <p className="text-muted-foreground font-medium mb-6">{error}</p>
+                <Button onClick={reset} variant="outline" className="border-red-500/30 text-red-500 hover:bg-red-500/10 rounded-full px-8 py-6 font-bold">Try Again</Button>
+              </motion.div>
             ) : result ? (
               <motion.div 
                 key="result"
                 initial={{ opacity: 0, rotateY: -90 }}
                 animate={{ opacity: 1, rotateY: 0 }}
+                data-testid="vision-result"
                 transition={{ duration: 0.6, type: "spring", bounce: 0.4 }}
                 className="absolute inset-0 bg-card border-2 border-indigo-500/20 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] flex flex-col justify-between p-8 transform-style-3d backface-hidden overflow-y-auto"
               >

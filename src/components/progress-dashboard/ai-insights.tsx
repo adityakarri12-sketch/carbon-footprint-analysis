@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Sparkles, Activity } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ export function AiInsights() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchAnalysis = async () => {
+  const fetchAnalysis = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -28,13 +28,11 @@ export function AiInsights() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-     
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchAnalysis();
-  }, []);
+  }, [fetchAnalysis]);
 
   return (
     <div className="w-full relative overflow-hidden rounded-2xl border border-blue-500/30 bg-card p-6 shadow-[0_0_20px_rgba(59,130,246,0.15)] group transition-all hover:shadow-[0_0_30px_rgba(59,130,246,0.3)]">
@@ -54,6 +52,7 @@ export function AiInsights() {
           size="sm" 
           onClick={fetchAnalysis} 
           disabled={loading}
+          aria-disabled={loading}
           className="border-blue-500/30 text-blue-500 hover:bg-blue-500/10"
         >
           <Activity className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
@@ -61,20 +60,20 @@ export function AiInsights() {
         </Button>
       </div>
 
-      <div className="relative z-10 prose prose-invert max-w-none">
+      <div className="relative z-10 prose prose-invert max-w-none" aria-live="polite" aria-atomic="true">
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-8 space-y-4">
+          <div className="flex flex-col items-center justify-center py-8 space-y-4" data-testid="ai-insights-loading">
             <div className="w-12 h-12 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
             <p className="text-blue-500 font-mono tracking-widest uppercase text-sm animate-pulse">
               Synthesizing Footprint Data...
             </p>
           </div>
         ) : error ? (
-          <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-500">
+          <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-500" data-testid="ai-insights-error">
             {error}
           </div>
         ) : analysis ? (
-          <div className="text-muted-foreground leading-relaxed space-y-4 [&>h3]:text-white [&>h3]:font-bold [&>h3]:mt-6 [&>ul]:list-disc [&>ul]:pl-6 [&>p>strong]:text-blue-400">
+          <div className="text-muted-foreground leading-relaxed space-y-4 [&>h3]:text-white [&>h3]:font-bold [&>h3]:mt-6 [&>ul]:list-disc [&>ul]:pl-6 [&>p>strong]:text-blue-400" data-testid="ai-insights-result">
             <ReactMarkdown>{analysis}</ReactMarkdown>
           </div>
         ) : (

@@ -19,9 +19,11 @@ jest.mock('next/image', () => ({
 
 import { AdvisorDashboard } from '@/components/advisor/advisor-dashboard';
 
+global.fetch = jest.fn(() => Promise.resolve({ json: () => Promise.resolve({}) })) as jest.Mock;
+
 describe('AdvisorDashboard', () => {
   it('renders without crashing', () => {
     render(<AdvisorDashboard />);
-    expect(screen.getAllByText(/AI Sustainability Advisor/i)[0]).toBeInTheDocument();
+    expect(screen.getAllByText(/AI Goal Designer/i)[0]).toBeInTheDocument();
   });
 });

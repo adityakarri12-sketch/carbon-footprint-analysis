@@ -12,6 +12,8 @@ jest.mock('next/image', () => ({
 
 import { VisionScanner } from '@/components/vision/vision-scanner';
 
+global.fetch = jest.fn(() => Promise.resolve({ json: () => Promise.resolve({}) })) as jest.Mock;
+
 describe('VisionScanner', () => {
   it('renders without crashing', () => {
     render(<VisionScanner />);

@@ -42,12 +42,13 @@ export const POST = withErrorHandler(async ({ userId }) => {
       You are an expert Sustainability Analyst AI for the "CarbonWise" platform.
       Analyze the user's carbon footprint history: ${JSON.stringify(history)}
       
-      Provide a highly detailed, 3-section report (max 300 words total) formatted in clean HTML (e.g. using <h3>, <p>, <ul>, <li>, <strong>).
-      1. Trend Analysis: How have their emissions changed over time based on the data provided?
-      2. Core Problem Areas: Identify the largest contributing factor (e.g. transportation, electricity, food, waste) and explain why it's impactful.
-      3. Predictive Modeling: Based on their current trajectory, project their future footprint and encourage them.
+      Provide a highly detailed, 3-section report (max 300 words total) formatted in clean Markdown (use ### for headings, ** for bold, and bulleted lists). 
+      Structure your response exactly around our 3 core pillars:
+      1. Understand: Identify the baseline and the largest contributing factor (e.g. transportation, electricity, food, waste).
+      2. Track: Analyze their trends based on the data. Are they improving?
+      3. Reduce: Provide specific, highly actionable next steps to lower their footprint, projecting their future impact.
 
-      Use professional, encouraging language. Return ONLY the HTML, no markdown wrappers like \`\`\`html.
+      Use professional, encouraging language. Return ONLY the Markdown text.
     `;
 
     const result = await model.generateContent(prompt);
@@ -55,7 +56,7 @@ export const POST = withErrorHandler(async ({ userId }) => {
     
     return NextResponse.json({ analysis });
   } catch (error) {
-    void(error);
+    console.error("Gemini AI Analysis Error:", error);
     throw new ApiError('Failed to generate AI analysis. Please try again later.', 500);
   }
 });

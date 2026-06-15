@@ -6,9 +6,12 @@ jest.mock('dompurify', () => ({
   sanitize: (val: string) => val
 }));
 
-global.fetch = jest.fn();
+jest.mock('react-markdown', () => (props: any) => <>{props.children}</>);
 
 describe('AiInsights Component', () => {
+  beforeAll(() => {
+    global.fetch = jest.fn(() => Promise.resolve({ json: () => Promise.resolve({}) })) as jest.Mock;
+  });
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -31,7 +34,7 @@ describe('AiInsights Component', () => {
 
     render(<AiInsights />);
     await waitFor(() => {
-      expect(screen.getByText('AI Insight')).toBeInTheDocument();
+      expect(screen.getByText('<p>AI Insight</p>')).toBeInTheDocument();
     });
   });
 
