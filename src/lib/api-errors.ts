@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
 export function handleApiError(error: unknown, context: string) {
-  void(`[API_ERROR] [${context}]`, error);
+  void(error);
 
   if (error instanceof z.ZodError) {
     return NextResponse.json({ 

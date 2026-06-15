@@ -96,7 +96,7 @@ export function VoiceCommander() {
         };
 
         rec.onerror = (event: SpeechRecognitionErrorEvent) => {
-          void("Speech recognition error", event.error);
+          void(event.error);
           setIsListening(false);
           toast({ 
             title: "Microphone Error", 

@@ -71,7 +71,7 @@ export const GET = withErrorHandler(async ({ req }) => {
     return NextResponse.json({ places: [] });
 
   } catch (error) {
-    void('Places API Error:', error);
+    void(error);
     return NextResponse.json({ error: error instanceof Error ? error.message : 'Failed to fetch places' }, { status: 500 });
   }
 });

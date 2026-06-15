@@ -55,7 +55,7 @@ export const POST = withErrorHandler(async ({ userId }) => {
     
     return NextResponse.json({ analysis });
   } catch (error) {
-    void("Gemini Analyze API Error:", error);
+    void(error);
     throw new ApiError('Failed to generate AI analysis. Please try again later.', 500);
   }
 });

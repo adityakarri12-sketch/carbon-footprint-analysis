@@ -18,7 +18,7 @@ export function HeroSection({ userId }: HeroSectionProps) {
     fetch('/gc-atom.json')
       .then(res => res.json())
       .then(data => setAnimationData(data))
-      .catch(err => void('Error loading Lottie animation:', err));
+      .catch(err => void(err));
   }, []);
 
   return (

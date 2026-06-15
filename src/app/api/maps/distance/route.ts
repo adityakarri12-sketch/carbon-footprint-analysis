@@ -51,7 +51,7 @@ export const GET = withErrorHandler(async ({ req }) => {
     return NextResponse.json({ error: 'Invalid response from Google Maps' }, { status: 500 });
 
   } catch (error) {
-    void('Distance Matrix Error:', error);
+    void(error);
     return NextResponse.json({ error: error instanceof Error ? error.message : 'Failed to fetch distance' }, { status: 500 });
   }
 });

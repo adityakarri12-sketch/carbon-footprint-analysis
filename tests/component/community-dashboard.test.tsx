@@ -9,7 +9,7 @@ import { CommunityDashboard } from '@/components/community/community-dashboard';
 
 describe('CommunityDashboard', () => {
   it('renders without crashing', () => {
-    render(<CommunityDashboard />);
+    render(<CommunityDashboard apiKey="dummy" />);
     expect(screen.getAllByText(/Gemini Community Insight/i)[0]).toBeInTheDocument();
   });
 });

@@ -18,7 +18,7 @@ describe('HeroSection', () => {
   });
 
   it('renders the hero section correctly', () => {
-    render(<HeroSection />);
+    render(<HeroSection userId="dummy" />);
     expect(screen.getAllByText(/Welcome to/i)[0]).toBeInTheDocument();
   });
 });

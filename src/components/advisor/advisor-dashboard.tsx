@@ -30,7 +30,7 @@ export function AdvisorDashboard() {
     fetch('/robot.json')
       .then(res => res.json())
       .then(data => setRobotAnimationData(data))
-      .catch(err => void('Error loading robot animation:', err));
+      .catch(err => void(err));
   }, []);
   
   const [mapFilter, setMapFilter] = useState<'recycling' | 'ev' | 'ewaste' | 'transit'>('recycling');

@@ -69,7 +69,7 @@ export const POST = withErrorHandler(async ({ req, userId }) => {
     return NextResponse.json(analysis);
 
   } catch (error) {
-    void("Gemini Vision API Error:", error);
+    void(error);
     // Graceful degradation to Electric Kettle
     return NextResponse.json({
       itemName: "Electric Kettle",
